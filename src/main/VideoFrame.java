@@ -7,16 +7,18 @@ import java.awt.Graphics;
  * @author Gabriel
  */
 public class VideoFrame extends javax.swing.JFrame {
+    public VideoLoader videoLoader;
 
     public VideoFrame() {
         initComponents();
         
+        this.videoLoader = new VideoLoader();
         
         new MyThread().start();
     }
     
-    VideoLoader videoLoader = new VideoLoader();
     
+    @Override
     public void paint(Graphics g){
         g = videoPanel.getGraphics();
         g.drawImage(videoLoader.grabFrame(), 0, 0, this);

@@ -12,20 +12,22 @@ public class VideoLoader {
 
     private VideoCapture video;
     private String fileDir;
-    
-    MatParaImagem matParaImagem = new MatParaImagem();
+    private String extension;
+
+    public MatParaImagem matParaImagem;
 
     public VideoLoader() {
+        this.matParaImagem = new MatParaImagem();
         this.video = new VideoCapture();
-        this.fileDir = System.getProperty("user.dir");
+        this.fileDir = System.getProperty("user.dir") + File.separator + "videos" + File.separator;
+        this.extension = ".MOV";
 
         loadVideo();
     }
 
     private void loadVideo() {
-        String first_test = File.separator + "videos" + File.separator + "MVI_2702.MOV";
-        String second_test = File.separator + "teste_2.mp4";
-        
+        String first_test = "MVI_2702" + extension;
+
         String caminhoCompleto = fileDir + first_test;
 
         if (video.open(caminhoCompleto)) {
