@@ -10,8 +10,7 @@ project-root-directory/
 + build.xml
 
 # NetBeans specific #
-nbproject/private/
-nbproject/project.properties
+nbproject/
 build/
 nbbuild/
 dist/

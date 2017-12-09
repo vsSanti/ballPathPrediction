@@ -6,33 +6,50 @@ import java.awt.Graphics;
  *
  * @author Gabriel
  */
-public class VideoFrame extends javax.swing.JFrame {
+public class MainJFrame extends javax.swing.JFrame {
+
     public VideoLoader videoLoader;
 
-    public VideoFrame() {
+    public MainJFrame() {
         initComponents();
-        
+
         this.videoLoader = new VideoLoader();
-        
+
         new MyThread().start();
     }
-    
-    
+
     @Override
-    public void paint(Graphics g){
+    public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2) {
+            g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        }
     }
- 
-    class MyThread extends Thread{
+    
+    public void tratarMats() {
+        TratarImagem tratamento = new TratarImagem(videoLoader.getMatsParaTratar());
+    }
+
+    class MyThread extends Thread {
+
         @Override
         public void run() {
-            for (;;){
-                repaint();
-                try { Thread.sleep(30);
-                } catch (InterruptedException e) {    }
-            }  
-        } 
+            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1 / 2; frameAtual++) {
+                if (frameAtual > videoLoader.getTotalFrames() / 2) {
+                    tratarMats();
+                    break;
+                } else {
+                    repaint();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+        }
     }
 
     /**
@@ -47,8 +64,10 @@ public class VideoFrame extends javax.swing.JFrame {
         videoPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(500, 500));
+        setMinimumSize(new java.awt.Dimension(1920, 1080));
         setSize(new java.awt.Dimension(500, 500));
+
+        videoPanel.setMaximumSize(new java.awt.Dimension(1250, 700));
 
         javax.swing.GroupLayout videoPanelLayout = new javax.swing.GroupLayout(videoPanel);
         videoPanel.setLayout(videoPanelLayout);
@@ -92,24 +111,27 @@ public class VideoFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VideoFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VideoFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VideoFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VideoFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VideoFrame().setVisible(true);
+                new MainJFrame().setVisible(true);
             }
         });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel videoPanel;
