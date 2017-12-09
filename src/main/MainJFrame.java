@@ -16,35 +16,39 @@ public class MainJFrame extends javax.swing.JFrame {
         this.videoLoader = new VideoLoader();
 
         new MyThread().start();
-        
     }
 
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2) {
+            g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        }
     }
     
-    public void setBounds() {
-        setBounds(0, 0, (int) videoLoader.matParaImagem.getWidth(), (int) videoLoader.matParaImagem.getHeight());
+    public void tratarMats() {
+        TratarImagem tratamento = new TratarImagem(videoLoader.getMatsParaTratar());
     }
 
     class MyThread extends Thread {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1; frameAtual++) {
-                
+            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1 / 2; frameAtual++) {
                 if (frameAtual > videoLoader.getTotalFrames() / 2) {
+                    tratarMats();
                     break;
+                } else {
+                    repaint();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                
-                repaint();
-                try {
-                    Thread.sleep(150);
-                } catch (InterruptedException e) {
-                }
+
             }
+
         }
     }
 
@@ -127,8 +131,7 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
     }
-    
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel videoPanel;
