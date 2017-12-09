@@ -1,14 +1,3 @@
-project-root-directory/
-+ nbproject/
-  build-impl.xml
-  + private/
-  + project.properties
-  + project.xml
-+ src/
-+ test/
-+ videos/
-+ build.xml
-
 # NetBeans specific #
 nbproject/
 build/
