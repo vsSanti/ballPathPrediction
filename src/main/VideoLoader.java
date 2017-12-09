@@ -23,10 +23,12 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String first_test = File.separator + "videos" + File.separator + "MVI_2700.MOV";
+        String first_test = File.separator + "videos" + File.separator + "MVI_2702.MOV";
         String second_test = File.separator + "teste_2.mp4";
+        
+        String caminhoCompleto = fileDir + first_test;
 
-        if (video.open(fileDir + first_test)) {
+        if (video.open(caminhoCompleto)) {
             System.out.println("Success");
         } else {
             System.out.println("Failure");
