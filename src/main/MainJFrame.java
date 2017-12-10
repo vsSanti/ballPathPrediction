@@ -27,6 +27,7 @@ public class MainJFrame extends javax.swing.JFrame {
     }
     
     public void tratarMats() {
+        videoLoader.mostrarMats();
         TratarImagem tratamento = new TratarImagem(videoLoader.getMatsParaTratar());
     }
 

@@ -1,8 +1,13 @@
 package main;
 
+import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
@@ -21,7 +26,7 @@ public class VideoLoader {
     private final double totalDeFrames;
     private double frameAtual;
     
-    private ArrayList<Mat> matsParaTratar;
+    private static ArrayList<Mat> matsParaTratar = new ArrayList<>();
     
     public MatParaImagem matParaImagem;
     
@@ -37,8 +42,7 @@ public class VideoLoader {
         
         totalDeFrames = video.get(Videoio.CAP_PROP_FRAME_COUNT);
         System.out.println("Total de frames: " + totalDeFrames);
-        
-        this.matsParaTratar = new ArrayList<>();
+
         this.matParaImagem = new MatParaImagem(totalDeFrames);
     }
 
@@ -60,10 +64,49 @@ public class VideoLoader {
         
         if (frameAtual > 0 && (frameAtual % 3) == 0) {
             matsParaTratar.add(matParaImagem.getMat());
+            
+            //mostrarImagem(matsParaTratar.get(matsParaTratar.size() - 1));
+            
+            System.out.println("mats: " + matsParaTratar.size());
         }
         
         video.read(matParaImagem.getMat());
         return matParaImagem.getImage(matParaImagem.getMat());
+    }
+    
+    public void mostrarMats() {
+        for (int i = 0; i < matsParaTratar.size(); i++) {
+            mostrarImagem(matsParaTratar.get(i));
+        }
+    }
+    
+     public void mostrarImagem(Mat mat) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        BufferedImage convertedMat = converterMat(mat);
+
+        ImageIcon icon = new ImageIcon(convertedMat);
+
+        frame.setLayout(new FlowLayout());
+        frame.setSize(convertedMat.getWidth(), convertedMat.getHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public BufferedImage converterMat(Mat mat) {
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        System.out.println("channels:" + mat.channels());
+        if (mat.channels() == 3) {
+            type = BufferedImage.TYPE_3BYTE_BGR;
+        }
+
+        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
+        mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+
+        return image;
     }
     
     public double getFrameAtual() {

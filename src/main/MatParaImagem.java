@@ -1,8 +1,13 @@
 package main;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.Random;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import org.apache.commons.math3.analysis.interpolation.DividedDifferenceInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonForm;
 import org.opencv.core.Core;
@@ -56,7 +61,6 @@ public class MatParaImagem {
         img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), dat);
         
       
-
         return desenhaGrafico(img);
     }
 
