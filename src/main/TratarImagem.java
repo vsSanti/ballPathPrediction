@@ -41,26 +41,22 @@ public class TratarImagem {
         mostrarBufferedImage(imagemFinal);
     }
 
-    public Mat getSaturation(Mat image) {
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-        Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+    public void iniciarTratamento() {
 
-        for (int i = 0; i < image.rows(); i++) {
-            for (int j = 0; j < image.cols(); j++) {
-                double temp[] = image.get(i, j);
-                saturation.put(i, j, temp[1]);
-            }
+        System.out.println("listaMats: " + listaMats.size());
+
+        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
+            System.out.println("matAtual: " + matAtual);
+            Mat image = listaMats.get(matAtual);
+
+            image = getSaturation(image);
+            image = getBinary(image);
+
+            mostrarMat(image);
+            System.out.println(image.toString());
+
+            getBallCoordinates(image);
         }
-
-        return saturation;
-    }
-
-    public Mat getBinary(Mat image) {
-        Mat binarized = new Mat();
-
-        Imgproc.threshold(image, binarized, 135, 255, Imgproc.THRESH_BINARY);
-
-        return binarized;
     }
 
     public void getBallCoordinates(Mat image) {
@@ -92,22 +88,26 @@ public class TratarImagem {
         System.out.println("Circulo escolhido X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
     }
 
-    public void iniciarTratamento() {
+    public Mat getSaturation(Mat image) {
+        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
+        Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
 
-        System.out.println("listaMats: " + listaMats.size());
-
-        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
-            System.out.println("matAtual: " + matAtual);
-            Mat image = listaMats.get(matAtual);
-
-            image = getSaturation(image);
-            image = getBinary(image);
-
-            mostrarMat(image);
-            System.out.println(image.toString());
-
-            getBallCoordinates(image);
+        for (int i = 0; i < image.rows(); i++) {
+            for (int j = 0; j < image.cols(); j++) {
+                double temp[] = image.get(i, j);
+                saturation.put(i, j, temp[1]);
+            }
         }
+
+        return saturation;
+    }
+
+    public Mat getBinary(Mat image) {
+        Mat binarized = new Mat();
+
+        Imgproc.threshold(image, binarized, 135, 255, Imgproc.THRESH_BINARY);
+
+        return binarized;
     }
 
     public BufferedImage desenhaGrafico(BufferedImage img) {
@@ -138,6 +138,46 @@ public class TratarImagem {
 
         }
         return img;
+    }
+
+    public void mostrarBufferedImage(BufferedImage bi) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        ImageIcon icon = new ImageIcon(bi);
+        criarFrames(frame, label, icon);
+    }
+
+    public void mostrarMat(Mat mat) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        BufferedImage convertedMat = converterMat(mat);
+
+        ImageIcon icon = new ImageIcon(convertedMat);
+        criarFrames(frame, label, icon);
+    }
+
+    public BufferedImage converterMat(Mat mat) {
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        System.out.println("channels:" + mat.channels());
+        if (mat.channels() == 3) {
+            type = BufferedImage.TYPE_3BYTE_BGR;
+        }
+
+        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
+        mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+
+        return image;
+    }
+
+    public void criarFrames(JFrame frame, JLabel label, ImageIcon icon) {
+        frame.setLayout(new FlowLayout());
+        frame.setSize(icon.getIconWidth(), icon.getIconHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public Color corVermelho() {
@@ -181,46 +221,6 @@ public class TratarImagem {
 
     public ArrayList<Double> getCoordY() {
         return coordY;
-    }
-
-    public void mostrarBufferedImage(BufferedImage bi) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        ImageIcon icon = new ImageIcon(bi);
-        criarFrames(frame, label, icon);
-    }
-
-    public void mostrarMat(Mat mat) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        BufferedImage convertedMat = converterMat(mat);
-
-        ImageIcon icon = new ImageIcon(convertedMat);
-        criarFrames(frame, label, icon);
-    }
-
-    public BufferedImage converterMat(Mat mat) {
-        int type = BufferedImage.TYPE_BYTE_GRAY;
-        System.out.println("channels:" + mat.channels());
-        if (mat.channels() == 3) {
-            type = BufferedImage.TYPE_3BYTE_BGR;
-        }
-
-        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
-        mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
-
-        return image;
-    }
-
-    public void criarFrames(JFrame frame, JLabel label, ImageIcon icon) {
-        frame.setLayout(new FlowLayout());
-        frame.setSize(icon.getIconWidth(), icon.getIconHeight());
-        label.setIcon(icon);
-        frame.add(label);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     static {

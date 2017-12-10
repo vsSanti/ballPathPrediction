@@ -9,7 +9,7 @@ import org.opencv.imgproc.Imgproc;
  *
  * @author Gabriel
  */
-public class MatParaImagem {
+public class MatParaBuffImg {
 
     private Mat mat = new Mat();
     private BufferedImage img;
@@ -17,10 +17,10 @@ public class MatParaImagem {
 
     private BufferedImage imagemFinal;
 
-    public MatParaImagem() {
+    public MatParaBuffImg() {
     }
 
-    public MatParaImagem(Mat mat) {
+    public MatParaBuffImg(Mat mat) {
         getSpace(mat);
     }
 
@@ -37,7 +37,6 @@ public class MatParaImagem {
                 img = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
             }
         } catch (IllegalArgumentException e) {
-            //System.out.println("Fim do vídeo.");
         }
 
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGR); // normaliza as cores
