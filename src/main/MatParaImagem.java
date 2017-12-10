@@ -62,7 +62,7 @@ public class MatParaImagem {
 
         img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), dat);
         
-        imagemFinal = img;
+    imagemFinal = img;
         return img;
     }
     

@@ -115,48 +115,27 @@ public class TratarImagem {
         for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
             System.out.println("matAtual: " + matAtual);
             Mat image = listaMats.get(matAtual);
-            //mostrarImagem(image);
 
-            Mat hue = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
             Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-            Mat value = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-            Mat binario = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
 
             for (int i = 0; i < image.rows(); i++) {
                 for (int j = 0; j < image.cols(); j++) {
                     double temp[] = image.get(i, j);
-                    hue.put(i, j, temp[0]);
                     saturation.put(i, j, temp[1]);
-                    value.put(i, j, temp[2]);
                 }
             }
-            //mostrarImagem(saturation);
+            
+            Mat binarized = new Mat();
+            Imgproc.threshold(saturation, binarized, 135, 255, Imgproc.THRESH_BINARY);
 
-            for (int i = 0; i < hue.rows(); i++) {  // binarizacao
-                for (int j = 0; j < hue.cols(); j++) {
-                    double temp[] = hue.get(i, j);
-                    if (temp[0] >= 1 && temp[0] <= 13) {
-                        double t[] = image.get(i, j);
-                        binario.put(i, j, t);
-                    } else {
-                        double data[] = {0, 0, 0};
-                        binario.put(i, j, data);
-                    }
-                }
-            }
-
-            //
+            
             Mat circles = new Mat();
-            mostrarImagem(saturation);
-            //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 58, 15, 100);
-
-            // FUNCIONANDO 4N 2N 1080p
-            //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 70, 30, 100);
+            mostrarImagem(binarized);
+            
             System.out.println(saturation.toString());
-            // bom pro 1n
-            Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 55, 30, 50);
+            Imgproc.HoughCircles(binarized, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
 
             int maiorCirculo = 0;
             double maiorCirculoX = 0;
