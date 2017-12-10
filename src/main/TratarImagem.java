@@ -27,8 +27,6 @@ public class TratarImagem {
 
     private BufferedImage imagemFinal;
 
-    //private JFrame frame = new JFrame();
-    //private JLabel label = new JLabel();
     public TratarImagem(ArrayList<Mat> listaMats, BufferedImage imagemFinal) {
         System.out.println("tratamneto de imagem");
 
@@ -40,7 +38,76 @@ public class TratarImagem {
 
         iniciarTratamento();
         imagemFinal = desenhaGrafico(imagemFinal);
-        mostrarImagem(imagemFinal);
+        mostrarBufferedImage(imagemFinal);
+    }
+
+    public void iniciarTratamento() {
+
+        System.out.println("listaMats: " + listaMats.size());
+
+        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
+            System.out.println("matAtual: " + matAtual);
+            Mat image = listaMats.get(matAtual);
+
+            image = getSaturation(image);
+            image = getBinary(image);
+
+            //mostrarMat(image);
+            System.out.println(image.toString());
+
+            getBallCoordinates(image);
+        }
+    }
+
+    public void getBallCoordinates(Mat image) {
+        Mat circles = new Mat();
+
+        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
+
+        int maiorCirculo = 0;
+        double maiorCirculoX = 0;
+        double maiorCirculoY = 0;
+        for (int j = 0; j < circles.rows(); j++) {
+            for (int k = 0; k < circles.cols(); k++) {
+                double[] aux = circles.get(j, k);
+
+                if (aux[2] > maiorCirculo) {
+                    maiorCirculoX = aux[0];
+                    maiorCirculoY = aux[1];
+                }
+            }
+        }
+
+        if (maiorCirculoX != 0) {
+            coordX.add(maiorCirculoX);
+        }
+        if (maiorCirculoY != 0) {
+            coordY.add(maiorCirculoY);
+        }
+
+        System.out.println("Circulo escolhido X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
+    }
+
+    public Mat getSaturation(Mat image) {
+        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
+        Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+
+        for (int i = 0; i < image.rows(); i++) {
+            for (int j = 0; j < image.cols(); j++) {
+                double temp[] = image.get(i, j);
+                saturation.put(i, j, temp[1]);
+            }
+        }
+
+        return saturation;
+    }
+
+    public Mat getBinary(Mat image) {
+        Mat binarized = new Mat();
+
+        Imgproc.threshold(image, binarized, 135, 255, Imgproc.THRESH_BINARY);
+
+        return binarized;
     }
 
     public BufferedImage desenhaGrafico(BufferedImage img) {
@@ -73,26 +140,66 @@ public class TratarImagem {
         return img;
     }
 
+    public void mostrarBufferedImage(BufferedImage bi) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        ImageIcon icon = new ImageIcon(bi);
+        criarFrames(frame, label, icon);
+    }
+
+    public void mostrarMat(Mat mat) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        BufferedImage convertedMat = converterMat(mat);
+
+        ImageIcon icon = new ImageIcon(convertedMat);
+        criarFrames(frame, label, icon);
+    }
+
+    public BufferedImage converterMat(Mat mat) {
+        int type = BufferedImage.TYPE_BYTE_GRAY;
+        System.out.println("channels:" + mat.channels());
+        if (mat.channels() == 3) {
+            type = BufferedImage.TYPE_3BYTE_BGR;
+        }
+
+        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
+        mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
+
+        return image;
+    }
+
+    public void criarFrames(JFrame frame, JLabel label, ImageIcon icon) {
+        frame.setLayout(new FlowLayout());
+        frame.setSize(icon.getIconWidth(), icon.getIconHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     public Color corVermelho() {
         return new Color(255, 0, 0);
     }
-    
+
     public Color corAmarelo() {
         return new Color(255, 255, 0);
     }
-    
+
     public Color corVerde() {
         return new Color(0, 255, 0);
     }
-    
+
     public Color corRosa() {
         return new Color(255, 0, 255);
     }
-    
+
     public Color selecionaCor(int n) {
         Color color = corVermelho();
         switch (n) {
-            case 2: 
+            case 2:
                 color = corVermelho();
                 break;
             case 3:
@@ -108,109 +215,12 @@ public class TratarImagem {
         return color;
     }
 
-    public void iniciarTratamento() {
-
-        System.out.println("listaMats: " + listaMats.size());
-
-        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
-            System.out.println("matAtual: " + matAtual);
-            Mat image = listaMats.get(matAtual);
-
-            Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-
-            Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-
-            for (int i = 0; i < image.rows(); i++) {
-                for (int j = 0; j < image.cols(); j++) {
-                    double temp[] = image.get(i, j);
-                    saturation.put(i, j, temp[1]);
-                }
-            }
-            
-            Mat binarized = new Mat();
-            Imgproc.threshold(saturation, binarized, 135, 255, Imgproc.THRESH_BINARY);
-
-            
-            Mat circles = new Mat();
-            mostrarImagem(binarized);
-            
-            System.out.println(saturation.toString());
-            Imgproc.HoughCircles(binarized, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
-
-            int maiorCirculo = 0;
-            double maiorCirculoX = 0;
-            double maiorCirculoY = 0;
-            for (int j = 0; j < circles.rows(); j++) {
-                for (int k = 0; k < circles.cols(); k++) {
-                    double[] aux = circles.get(j, k);
-
-                    if (aux[2] > maiorCirculo) {
-                        maiorCirculoX = aux[0];
-                        maiorCirculoY = aux[1];
-                    }
-                }
-            }
-
-            if (maiorCirculoX != 0) {
-                coordX.add(maiorCirculoX);
-            }
-            if (maiorCirculoY != 0) {
-                coordY.add(maiorCirculoY);
-            }
-            System.out.println("Maior circulo X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
-        }
-
-    }
-
     public ArrayList<Double> getCoordX() {
         return coordX;
     }
 
     public ArrayList<Double> getCoordY() {
         return coordY;
-    }
-
-    public void mostrarImagem(Mat mat) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        BufferedImage convertedMat = converterMat(mat);
-
-        ImageIcon icon = new ImageIcon(convertedMat);
-
-        frame.setLayout(new FlowLayout());
-        frame.setSize(convertedMat.getWidth(), convertedMat.getHeight());
-        label.setIcon(icon);
-        frame.add(label);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public void mostrarImagem(BufferedImage img) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        ImageIcon icon = new ImageIcon(img);
-
-        frame.setLayout(new FlowLayout());
-        frame.setSize(img.getWidth(), img.getHeight());
-        label.setIcon(icon);
-        frame.add(label);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public BufferedImage converterMat(Mat mat) {
-        int type = BufferedImage.TYPE_BYTE_GRAY;
-        System.out.println("channels:" + mat.channels());
-        if (mat.channels() == 3) {
-            type = BufferedImage.TYPE_3BYTE_BGR;
-        }
-
-        BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
-        mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
-
-        return image;
     }
 
     static {
