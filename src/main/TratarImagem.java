@@ -59,7 +59,7 @@ public class TratarImagem {
 
         PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-        for (int i = 0; i < 720; i++) {
+        for (int i = 0; i < 850; i++) {
             double valor = fNewton.value(i);
             if (valor < img.getHeight() && valor > 0) {
                 img.setRGB(i, (int) valor, corVermelho().getRGB());
@@ -98,6 +98,7 @@ public class TratarImagem {
                     value.put(i, j, temp[2]);
                 }
             }
+            //mostrarImagem(saturation);
 
             for (int i = 0; i < hue.rows(); i++) {  // binarizacao
                 for (int j = 0; j < hue.cols(); j++) {
@@ -112,14 +113,15 @@ public class TratarImagem {
                 }
             }
 
-            mostrarImagem(saturation);
+            //
             Mat circles = new Mat();
-
+            mostrarImagem(saturation);
             //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 58, 15, 100);
             
             // FUNCIONANDO 4N 2N 1080p
             //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 70, 30, 100);
-            
+            System.out.println(saturation.toString());
+            // bom pro 1n
             Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 55, 30, 50);
 
             

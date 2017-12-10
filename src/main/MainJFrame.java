@@ -37,19 +37,16 @@ public class MainJFrame extends javax.swing.JFrame {
         @Override
         public void run() {
             for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1 / 2; frameAtual++) {
-                if (frameAtual > videoLoader.getTotalFrames() / 2) {
-                    tratarMats();
-                    break;
-                } else {
-                    repaint();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
+                repaint();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
             }
+            tratarMats();
 
         }
     }
