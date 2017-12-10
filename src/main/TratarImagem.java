@@ -24,7 +24,7 @@ public class TratarImagem {
 
     private ArrayList<Mat> listaMats;
     private ArrayList<Double> coordX, coordY;
-    
+
     private BufferedImage imagemFinal;
 
     //private JFrame frame = new JFrame();
@@ -42,24 +42,24 @@ public class TratarImagem {
         imagemFinal = desenhaGrafico(imagemFinal);
         mostrarImagem(imagemFinal);
     }
-    
-    
+
     public BufferedImage desenhaGrafico(BufferedImage img) {
 
         double[] x = new double[coordX.size()];
         double[] y = new double[coordY.size()];
-       
+
         for (int i = 0; i < coordX.size(); i++) {
-            x[i] = coordX.get(i);
-            y[i] = coordY.get(i);
+            if (coordX.get(i) != 0) {
+                x[i] = coordX.get(i);
+                y[i] = coordY.get(i);
+            }
         }
-        
-        
+
         System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
 
         PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-        for (int i = 0; i < 1920; i++) {
+        for (int i = 0; i < 1800; i++) {
             double valor = fNewton.value(i);
             if (valor < img.getHeight() && valor > 0) {
                 img.setRGB(i, (int) valor, corVermelho().getRGB());
@@ -69,7 +69,7 @@ public class TratarImagem {
 
         return img;
     }
-    
+
     public Color corVermelho() {
         return new Color(255, 0, 0);
     }
@@ -114,11 +114,12 @@ public class TratarImagem {
 
             //Imgproc.cvtColor(saturation, image, Imgproc.color_);
             //mostrarImagem(image);
-
             Mat circles = new Mat();
-            
-            Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 50, 60, 80);
 
+            Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 70, 30, 100);
+
+            // bom pro 4n
+            //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 50, 60, 80);
             int maiorCirculo = 0;
             double maiorCirculoX = 0;
             double maiorCirculoY = 0;
@@ -133,8 +134,12 @@ public class TratarImagem {
                 }
             }
 
-            coordX.add(maiorCirculoX);
-            coordY.add(maiorCirculoY);
+            if (maiorCirculoX != 0) {
+                coordX.add(maiorCirculoX);
+            }
+            if (maiorCirculoY != 0) {
+                coordY.add(maiorCirculoY);
+            }
             System.out.println("Maior circulo X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
         }
 
@@ -163,7 +168,7 @@ public class TratarImagem {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+
     public void mostrarImagem(BufferedImage img) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
