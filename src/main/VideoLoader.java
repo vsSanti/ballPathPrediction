@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
@@ -28,12 +29,18 @@ public class VideoLoader {
 
     private ArrayList<Mat> matsParaTratar;
     public MatParaBuffImg matParaImagem;
+    
+    private TratarImagem tratamentoImagem;
+    private ArrayList<Point> coordenadas;
 
     public VideoLoader() {
-        this.matsParaTratar = new ArrayList<>();
         this.video = new VideoCapture();
         this.fileDir = System.getProperty("user.dir") + File.separator + "videos" + File.separator;
         this.extension = ".mp4";
+        
+        this.tratamentoImagem = new TratarImagem();
+        this.matsParaTratar = new ArrayList<>();
+        this.coordenadas = new ArrayList<>();
 
         loadVideo();
 
@@ -57,11 +64,21 @@ public class VideoLoader {
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
         System.out.println("Frame atual: " + frameAtual);
+        
+        
 
         if (frameAtual > 0 && (frameAtual % 2) == 0) {
-            matsParaTratar.add(matParaImagem.getMat().clone());
-
-            System.out.println("Frames escolhidos: " + matsParaTratar.size());
+            //matsParaTratar.add(matParaImagem.getMat().clone());
+            if (!coordenadas.contains(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()))) {
+                coordenadas.add(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()));
+            }
+            
+            
+            if (coordenadas.size() >= 3) {
+                BufferedImage img = tratamentoImagem.desenhaGrafico(matParaImagem.getImage(matParaImagem.getMat()), coordenadas);
+                video.read(matParaImagem.getMat());
+                return img;
+            } 
         }
 
         video.read(matParaImagem.getMat());

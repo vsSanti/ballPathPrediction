@@ -14,6 +14,7 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonFor
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 /**
@@ -22,44 +23,23 @@ import org.opencv.imgproc.Imgproc;
  */
 public class TratarImagem {
 
-    private ArrayList<Mat> listaMats;
-    private ArrayList<Double> coordX, coordY;
-
-    private BufferedImage imagemFinal;
-
-    public TratarImagem(ArrayList<Mat> listaMats, BufferedImage imagemFinal) {
-        System.out.println("tratamneto de imagem");
-
-        this.listaMats = listaMats;
-        this.imagemFinal = imagemFinal;
-
-        coordX = new ArrayList<>();
-        coordY = new ArrayList<>();
-
-        iniciarTratamento();
-        imagemFinal = desenhaGrafico(imagemFinal);
-        mostrarBufferedImage(imagemFinal);
+    public TratarImagem() {
     }
 
-    public void iniciarTratamento() {
+    public Point tratarFrameAtual(Mat imagem) {
+        Point coord = new Point();
 
-        System.out.println("listaMats: " + listaMats.size());
+        imagem = getSaturation(imagem);
+        imagem = getBinary(imagem);
 
-        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
-            System.out.println("matAtual: " + matAtual);
-            Mat image = listaMats.get(matAtual);
+        //mostrarMat(imagem);
+        coord = getBallCoordinates(imagem);
 
-            image = getSaturation(image);
-            image = getBinary(image);
-
-            //mostrarMat(image);
-            System.out.println(image.toString());
-
-            getBallCoordinates(image);
-        }
+        return coord;
     }
 
-    public void getBallCoordinates(Mat image) {
+    public Point getBallCoordinates(Mat image) {
+        Point coord = new Point();
         Mat circles = new Mat();
 
         Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
@@ -79,13 +59,14 @@ public class TratarImagem {
         }
 
         if (maiorCirculoX != 0) {
-            coordX.add(maiorCirculoX);
+            coord.x = maiorCirculoX;
         }
         if (maiorCirculoY != 0) {
-            coordY.add(maiorCirculoY);
+            coord.y = maiorCirculoY;
         }
 
         System.out.println("Circulo escolhido X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
+        return coord;
     }
 
     public Mat getSaturation(Mat image) {
@@ -110,33 +91,38 @@ public class TratarImagem {
         return binarized;
     }
 
-    public BufferedImage desenhaGrafico(BufferedImage img) {
+    public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
 
-        for (int a = 2; a <= coordX.size(); a++) {
+        for (int a = 2; a <= coord.size(); a++) {
 
             double[] x = new double[a];
             double[] y = new double[a];
 
             for (int i = 0; i < a; i++) {
-                if (coordX.get(i) != 0) {
-                    x[i] = coordX.get(i);
-                    y[i] = coordY.get(i);
+                if (coord.get(i).x != 0) {
+                    x[i] = coord.get(i).x;
+                    y[i] = coord.get(i).y;
                 }
             }
 
             System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
 
-            PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
+            try {
+                PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-            for (int i = 0; i < 850; i++) {
-                double valor = fNewton.value(i);
-                if (valor < img.getHeight() && valor > 0) {
-                    img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
-                    img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+                for (int i = 0; i < 850; i++) {
+                    double valor = fNewton.value(i);
+                    if (valor < img.getHeight() && valor > 0) {
+                        img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
+                        img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+                    }
                 }
+            } catch (Exception e) {
+
             }
 
         }
+
         return img;
     }
 
@@ -213,14 +199,6 @@ public class TratarImagem {
                 break;
         }
         return color;
-    }
-
-    public ArrayList<Double> getCoordX() {
-        return coordX;
-    }
-
-    public ArrayList<Double> getCoordY() {
-        return coordY;
     }
 
     static {
