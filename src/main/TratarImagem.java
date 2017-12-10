@@ -1,12 +1,16 @@
 package main;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import org.apache.commons.math3.analysis.interpolation.DividedDifferenceInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonForm;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -20,18 +24,54 @@ public class TratarImagem {
 
     private ArrayList<Mat> listaMats;
     private ArrayList<Double> coordX, coordY;
+    
+    private BufferedImage imagemFinal;
 
     //private JFrame frame = new JFrame();
     //private JLabel label = new JLabel();
-    public TratarImagem(ArrayList<Mat> listaMats) {
+    public TratarImagem(ArrayList<Mat> listaMats, BufferedImage imagemFinal) {
         System.out.println("tratamneto de imagem");
 
         this.listaMats = listaMats;
+        this.imagemFinal = imagemFinal;
 
         coordX = new ArrayList<>();
         coordY = new ArrayList<>();
 
-        //iniciarTratamento();
+        iniciarTratamento();
+        imagemFinal = desenhaGrafico(imagemFinal);
+        mostrarImagem(imagemFinal);
+    }
+    
+    
+    public BufferedImage desenhaGrafico(BufferedImage img) {
+
+        double[] x = new double[coordX.size()];
+        double[] y = new double[coordY.size()];
+       
+        for (int i = 0; i < coordX.size(); i++) {
+            x[i] = coordX.get(i);
+            y[i] = coordY.get(i);
+        }
+        
+        
+        System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+
+        PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
+
+        for (int i = 0; i < 1920; i++) {
+            double valor = fNewton.value(i);
+            if (valor < img.getHeight() && valor > 0) {
+                img.setRGB(i, (int) valor, corVermelho().getRGB());
+                img.setRGB(i + 1, (int) valor, corVermelho().getRGB());
+            }
+        }
+
+        return img;
+    }
+    
+    public Color corVermelho() {
+        return new Color(255, 0, 0);
     }
 
     public void iniciarTratamento() {
@@ -72,11 +112,12 @@ public class TratarImagem {
                 }
             }
 
-            Imgproc.cvtColor(binario, image, Imgproc.COLOR_BGR2GRAY);
+            //Imgproc.cvtColor(saturation, image, Imgproc.color_);
             //mostrarImagem(image);
 
             Mat circles = new Mat();
-            Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 10, 200, 10, 100, 500);
+            
+            Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 50, 60, 80);
 
             int maiorCirculo = 0;
             double maiorCirculoX = 0;
@@ -117,6 +158,20 @@ public class TratarImagem {
 
         frame.setLayout(new FlowLayout());
         frame.setSize(convertedMat.getWidth(), convertedMat.getHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    public void mostrarImagem(BufferedImage img) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        ImageIcon icon = new ImageIcon(img);
+
+        frame.setLayout(new FlowLayout());
+        frame.setSize(img.getWidth(), img.getHeight());
         label.setIcon(icon);
         frame.add(label);
         frame.setVisible(true);

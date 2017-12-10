@@ -62,7 +62,7 @@ public class VideoLoader {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
         System.out.println("Frame atual: " + frameAtual);
         
-        if (frameAtual > 0 && (frameAtual % 3) == 0) {
+        if (frameAtual > 0 && (frameAtual % 2) == 0) {
             matsParaTratar.add(matParaImagem.getMat().clone());
             
             System.out.println("mats: " + matsParaTratar.size());
@@ -97,7 +97,7 @@ public class VideoLoader {
     public BufferedImage converterMat(Mat mat) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
         System.out.println("channels:" + mat.channels());
-        if (mat.channels() == 3) {
+        if (mat.channels() == 2) {
             type = BufferedImage.TYPE_3BYTE_BGR;
         }
 
@@ -105,6 +105,10 @@ public class VideoLoader {
         mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
         return image;
+    }
+    
+    public BufferedImage getImagemFinal() {
+        return matParaImagem.getImagemFinal();
     }
     
     public double getFrameAtual() {

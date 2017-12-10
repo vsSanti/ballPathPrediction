@@ -24,6 +24,8 @@ public class MatParaImagem {
     private BufferedImage img;
     private byte[] dat;
     
+    private BufferedImage imagemFinal;
+    
     private double quantidadeTotalFrames;
     private double frameAtual;
 
@@ -60,43 +62,14 @@ public class MatParaImagem {
 
         img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), dat);
         
-      
-        return desenhaGrafico(img);
-    }
-
-    public BufferedImage desenhaGrafico(BufferedImage img) {
-
-//        gera um gráfico qualquer
-        int n = 3;
-        double[] x = new double[n];
-        double[] y = new double[n];
-
-        for (int i = 0; i < n; i++) {
-            x[i] = i * 10;
-        }
-
-//        testar com diferentes valores aqui
-        y[0] = 8;
-        y[1] = 13;
-        y[2] = 17.5;
-
-        PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
-
-        for (int i = 0; i < 200; i++) {
-            double valor = fNewton.value(i);
-            if (valor < img.getHeight() && valor > 0) {
-                img.setRGB(i, (int) valor, corVermelho().getRGB());
-                img.setRGB(i + 1, (int) valor, corVermelho().getRGB());
-            }
-        }
-
+        imagemFinal = img;
         return img;
     }
-
-    public Color corVermelho() {
-        return new Color(255, 0, 0);
+    
+    public BufferedImage getImagemFinal() {
+        return imagemFinal;
     }
-
+        
     public Mat getMat() {
         return mat;
     }

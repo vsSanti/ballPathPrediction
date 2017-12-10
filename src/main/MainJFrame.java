@@ -9,6 +9,7 @@ import java.awt.Graphics;
 public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
+    public TratarImagem tratarImagem;
 
     public MainJFrame() {
         initComponents();
@@ -27,8 +28,8 @@ public class MainJFrame extends javax.swing.JFrame {
     }
 
     public void tratarMats() {
-        videoLoader.mostrarMats();
-        new TratarImagem(videoLoader.getMatsParaTratar());
+        //videoLoader.mostrarMats();
+        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
     }
 
     class MyThread extends Thread {
