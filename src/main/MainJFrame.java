@@ -9,10 +9,13 @@ import java.awt.Graphics;
 public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
+    public TratarImagem tratarImagem;
+    public boolean teste;
 
     public MainJFrame() {
         initComponents();
 
+        teste = true;
         this.videoLoader = new VideoLoader();
 
         new MyThread().start();
@@ -21,33 +24,33 @@ public class MainJFrame extends javax.swing.JFrame {
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2) {
+        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && teste) {
             g.drawImage(videoLoader.grabFrame(), 0, 0, this);
         }
     }
-    
+
     public void tratarMats() {
-        TratarImagem tratamento = new TratarImagem(videoLoader.getMatsParaTratar());
+        //videoLoader.mostrarMats();
+        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
     }
 
     class MyThread extends Thread {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1 / 2; frameAtual++) {
-                if (frameAtual > videoLoader.getTotalFrames() / 2) {
-                    tratarMats();
-                    break;
-                } else {
-                    repaint();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+            for (int frameAtual = 0; frameAtual < (videoLoader.getTotalFrames() - 1) / 2; frameAtual++) {
 
+                repaint();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            
+            teste = false;
+            tratarMats();
+            interrupt();
 
         }
     }
@@ -64,7 +67,7 @@ public class MainJFrame extends javax.swing.JFrame {
         videoPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1920, 1080));
+        setMinimumSize(new java.awt.Dimension(1000, 500));
         setSize(new java.awt.Dimension(500, 500));
 
         videoPanel.setMaximumSize(new java.awt.Dimension(1250, 700));
