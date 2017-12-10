@@ -66,7 +66,7 @@ public class MainJFrame extends javax.swing.JFrame {
         videoPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1920, 1080));
+        setMinimumSize(new java.awt.Dimension(1000, 500));
         setSize(new java.awt.Dimension(500, 500));
 
         videoPanel.setMaximumSize(new java.awt.Dimension(1250, 700));

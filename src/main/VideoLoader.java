@@ -47,7 +47,7 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String first_test = "4N" + extension;
+        String first_test = "1N-480" + extension;
 
         String caminhoCompleto = fileDir + first_test;
 
