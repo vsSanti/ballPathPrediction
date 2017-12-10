@@ -29,18 +29,21 @@ public class VideoLoader {
 
     private ArrayList<Mat> matsParaTratar;
     public MatParaBuffImg matParaImagem;
-    
+
     private TratarImagem tratamentoImagem;
     private ArrayList<Point> coordenadas;
+
+    private boolean fazerAlteracaoDesenho;
 
     public VideoLoader() {
         this.video = new VideoCapture();
         this.fileDir = System.getProperty("user.dir") + File.separator + "videos" + File.separator;
         this.extension = ".mp4";
-        
+
         this.tratamentoImagem = new TratarImagem();
         this.matsParaTratar = new ArrayList<>();
         this.coordenadas = new ArrayList<>();
+        this.fazerAlteracaoDesenho = true;
 
         loadVideo();
 
@@ -64,21 +67,24 @@ public class VideoLoader {
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
         System.out.println("Frame atual: " + frameAtual);
-        
-        
 
-        if (frameAtual > 0 && (frameAtual % 2) == 0) {
-            //matsParaTratar.add(matParaImagem.getMat().clone());
+        if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
+
             if (!coordenadas.contains(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()))) {
                 coordenadas.add(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()));
             }
-            
-            
+
             if (coordenadas.size() >= 3) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(matParaImagem.getImage(matParaImagem.getMat()), coordenadas);
+
+                fazerAlteracaoDesenho = false;
+
                 video.read(matParaImagem.getMat());
                 return img;
-            } 
+            }
+        } else if (frameAtual > 0 && !fazerAlteracaoDesenho) {
+            video.read(matParaImagem.getMat());
+            return tratamentoImagem.desenhaGrafico(matParaImagem.getImage(matParaImagem.getMat()), coordenadas);
         }
 
         video.read(matParaImagem.getMat());
