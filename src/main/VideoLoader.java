@@ -26,14 +26,14 @@ public class VideoLoader {
     private final double totalDeFrames;
     private double frameAtual;
     
-    private static ArrayList<Mat> matsParaTratar = new ArrayList<>();
+    private ArrayList<BufferedImage> matsParaTratar;
     
     public MatParaImagem matParaImagem;
     
 
     public VideoLoader() {
         
-        
+        this.matsParaTratar = new ArrayList<>();
         this.video = new VideoCapture();
         this.fileDir = System.getProperty("user.dir") + File.separator + "videos" + File.separator;
         this.extension = ".mp4";
@@ -63,9 +63,9 @@ public class VideoLoader {
         System.out.println("Frame atual: " + frameAtual);
         
         if (frameAtual > 0 && (frameAtual % 3) == 0) {
-            matsParaTratar.add(matParaImagem.getMat());
+            matsParaTratar.add(new MatParaImagem(matParaImagem.getMat()).getImage(matParaImagem.getMat()));
             
-            //mostrarImagem(matsParaTratar.get(matsParaTratar.size() - 1));
+//            mostrarImagem(matsParaTratar.get(matsParaTratar.size() - 1));
             
             System.out.println("mats: " + matsParaTratar.size());
         }
@@ -80,11 +80,11 @@ public class VideoLoader {
         }
     }
     
-     public void mostrarImagem(Mat mat) {
+     public void mostrarImagem(BufferedImage mat) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
 
-        BufferedImage convertedMat = converterMat(mat);
+        BufferedImage convertedMat = mat;
 
         ImageIcon icon = new ImageIcon(convertedMat);
 
@@ -113,7 +113,7 @@ public class VideoLoader {
         return frameAtual;
     }
     
-    public ArrayList<Mat> getMatsParaTratar() {
+    public ArrayList<BufferedImage> getMatsParaTratar() {
         return matsParaTratar;
     }
     
