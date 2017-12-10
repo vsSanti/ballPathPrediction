@@ -36,7 +36,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() - 1 / 2; frameAtual++) {
+            for (int frameAtual = 0; frameAtual < (videoLoader.getTotalFrames() - 1) / 2; frameAtual++) {
 
                 repaint();
                 try {
@@ -44,8 +44,8 @@ public class MainJFrame extends javax.swing.JFrame {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
+            
             tratarMats();
 
         }
