@@ -1,12 +1,16 @@
 package main;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import org.apache.commons.math3.analysis.interpolation.DividedDifferenceInterpolator;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonForm;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -19,77 +23,156 @@ import org.opencv.imgproc.Imgproc;
 public class TratarImagem {
 
     private ArrayList<Mat> listaMats;
-    private ArrayList<Integer> coordX, coordY;
+    private ArrayList<Double> coordX, coordY;
 
-    private Mat hue, saturation, value, binario;
+    private BufferedImage imagemFinal;
 
-    private JFrame frame = new JFrame();
-    private JLabel label = new JLabel();
-
-    int histograma[] = new int[256];
-
-    public TratarImagem(ArrayList<Mat> listaMats) {
+    //private JFrame frame = new JFrame();
+    //private JLabel label = new JLabel();
+    public TratarImagem(ArrayList<Mat> listaMats, BufferedImage imagemFinal) {
         System.out.println("tratamneto de imagem");
 
         this.listaMats = listaMats;
+        this.imagemFinal = imagemFinal;
 
         coordX = new ArrayList<>();
         coordY = new ArrayList<>();
 
         iniciarTratamento();
+        imagemFinal = desenhaGrafico(imagemFinal);
+        mostrarImagem(imagemFinal);
+    }
+
+    public BufferedImage desenhaGrafico(BufferedImage img) {
+
+        for (int a = 2; a <= coordX.size(); a++) {
+
+            double[] x = new double[a];
+            double[] y = new double[a];
+
+            for (int i = 0; i < a; i++) {
+                if (coordX.get(i) != 0) {
+                    x[i] = coordX.get(i);
+                    y[i] = coordY.get(i);
+                }
+            }
+
+            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+
+            PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
+
+            for (int i = 0; i < 850; i++) {
+                double valor = fNewton.value(i);
+                if (valor < img.getHeight() && valor > 0) {
+                    img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
+                    img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+                }
+            }
+
+        }
+        return img;
+    }
+
+    public Color corVermelho() {
+        return new Color(255, 0, 0);
+    }
+    
+    public Color corAmarelo() {
+        return new Color(255, 255, 0);
+    }
+    
+    public Color corVerde() {
+        return new Color(0, 255, 0);
+    }
+    
+    public Color corRosa() {
+        return new Color(255, 0, 255);
+    }
+    
+    public Color selecionaCor(int n) {
+        Color color = corVermelho();
+        switch (n) {
+            case 2: 
+                color = corVermelho();
+                break;
+            case 3:
+                color = corAmarelo();
+                break;
+            case 4:
+                color = corVerde();
+                break;
+            case 5:
+                color = corRosa();
+                break;
+        }
+        return color;
     }
 
     public void iniciarTratamento() {
 
+        System.out.println("listaMats: " + listaMats.size());
+
         for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
+            System.out.println("matAtual: " + matAtual);
             Mat image = listaMats.get(matAtual);
 
-            hue = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-            saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-            value = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-            binario = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
+            Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-            mostrarImagem(image);
-            
+
             for (int i = 0; i < image.rows(); i++) {
                 for (int j = 0; j < image.cols(); j++) {
                     double temp[] = image.get(i, j);
-                    hue.put(i, j, temp[0]);
                     saturation.put(i, j, temp[1]);
-                    value.put(i, j, temp[2]);
                 }
             }
+            
+            Mat binarized = new Mat();
+            Imgproc.threshold(saturation, binarized, 135, 255, Imgproc.THRESH_BINARY);
 
-            for (int i = 0; i < hue.rows(); i++) {  // binarizacao
-                for (int j = 0; j < hue.cols(); j++) {
-                    double temp[] = hue.get(i, j);
-                    if (temp[0] >= 15 && temp[0] <= 20) {
-                        double t[] = image.get(i, j);
-                        binario.put(i, j, t);
-                    } else {
-                        double data[] = {0, 0, 0};
-                        binario.put(i, j, data);
+            
+            Mat circles = new Mat();
+            mostrarImagem(binarized);
+            
+            System.out.println(saturation.toString());
+            Imgproc.HoughCircles(binarized, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
+
+            int maiorCirculo = 0;
+            double maiorCirculoX = 0;
+            double maiorCirculoY = 0;
+            for (int j = 0; j < circles.rows(); j++) {
+                for (int k = 0; k < circles.cols(); k++) {
+                    double[] aux = circles.get(j, k);
+
+                    if (aux[2] > maiorCirculo) {
+                        maiorCirculoX = aux[0];
+                        maiorCirculoY = aux[1];
                     }
                 }
             }
 
-            for (int i = 0; i < image.rows(); i++) {
-                for (int j = 0; j < image.cols(); j++) {
-                    double temp[] = image.get(i, j);
-                    histograma[(int) temp[0]]++;
-                }
+            if (maiorCirculoX != 0) {
+                coordX.add(maiorCirculoX);
             }
-
-            /*for (int i = 0; i < 256; i++) {
-                System.out.println(histograma[i]);
-            }*/
-            mostrarImagem(binario);
+            if (maiorCirculoY != 0) {
+                coordY.add(maiorCirculoY);
+            }
+            System.out.println("Maior circulo X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
         }
 
     }
 
+    public ArrayList<Double> getCoordX() {
+        return coordX;
+    }
+
+    public ArrayList<Double> getCoordY() {
+        return coordY;
+    }
+
     public void mostrarImagem(Mat mat) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
 
         BufferedImage convertedMat = converterMat(mat);
 
@@ -103,11 +186,27 @@ public class TratarImagem {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public void mostrarImagem(BufferedImage img) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        ImageIcon icon = new ImageIcon(img);
+
+        frame.setLayout(new FlowLayout());
+        frame.setSize(img.getWidth(), img.getHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     public BufferedImage converterMat(Mat mat) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
-        if (mat.channels() > 1) {
+        System.out.println("channels:" + mat.channels());
+        if (mat.channels() == 3) {
             type = BufferedImage.TYPE_3BYTE_BGR;
         }
+
         BufferedImage image = new BufferedImage(mat.cols(), mat.rows(), type);
         mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
