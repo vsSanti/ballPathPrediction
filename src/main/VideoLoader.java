@@ -27,7 +27,6 @@ public class VideoLoader {
     private double frameAtual;
 
     private ArrayList<Mat> matsParaTratar;
-
     public MatParaBuffImg matParaImagem;
 
     public VideoLoader() {
@@ -45,9 +44,8 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String first_test = "4N" + extension;
-
-        String caminhoCompleto = fileDir + first_test;
+        String videoEscolhido = "4N" + extension;
+        String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
             System.out.println("Video carrecado com sucesso.");

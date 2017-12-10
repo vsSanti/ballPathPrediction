@@ -10,12 +10,12 @@ public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
     public TratarImagem tratarImagem;
-    public boolean teste;
+    public boolean possivelContinuar;
 
     public MainJFrame() {
         initComponents();
 
-        teste = true;
+        possivelContinuar = true;
         this.videoLoader = new VideoLoader();
 
         new threadVideo().start();
@@ -30,7 +30,7 @@ public class MainJFrame extends javax.swing.JFrame {
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && teste) {
+        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && possivelContinuar) {
             g.drawImage(videoLoader.grabFrame(), 0, 0, this);
         }
     }
@@ -42,6 +42,7 @@ public class MainJFrame extends javax.swing.JFrame {
             for (int frameAtual = 0; frameAtual < (videoLoader.getTotalFrames() - 1) / 2; frameAtual++) {
 
                 repaint();
+                
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -49,7 +50,7 @@ public class MainJFrame extends javax.swing.JFrame {
                 }
             }
 
-            teste = false;
+            possivelContinuar = false;
             tratarMats();
             interrupt();
 

@@ -52,7 +52,7 @@ public class TratarImagem {
             image = getSaturation(image);
             image = getBinary(image);
 
-            mostrarMat(image);
+            //mostrarMat(image);
             System.out.println(image.toString());
 
             getBallCoordinates(image);
