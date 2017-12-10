@@ -2,7 +2,6 @@ package main;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import org.apache.commons.math3.analysis.interpolation.DividedDifferenceInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonForm;
 import org.opencv.core.Core;
@@ -18,15 +17,18 @@ public class MatParaImagem {
     private Mat mat = new Mat();
     private BufferedImage img;
     private byte[] dat;
-    
+
     private double quantidadeTotalFrames;
     private double frameAtual;
+    private int indice;
 
     public MatParaImagem(double quantidadeTotalFrames) {
+        indice = 1;
         this.quantidadeTotalFrames = quantidadeTotalFrames;
     }
 
     public MatParaImagem(Mat mat) {
+        indice = 1;
         getSpace(mat);
     }
 
@@ -54,8 +56,6 @@ public class MatParaImagem {
         mat.get(0, 0, dat);
 
         img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), dat);
-        
-      
 
         return desenhaGrafico(img);
     }
@@ -78,13 +78,15 @@ public class MatParaImagem {
 
         PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-        for (int i = 0; i < 200; i++) {
-            double valor = fNewton.value(i);
+        for (int j = 0; j < indice; j++) {
+            double valor = fNewton.value(j);
             if (valor < img.getHeight() && valor > 0) {
-                img.setRGB(i, (int) valor, corVermelho().getRGB());
-                img.setRGB(i + 1, (int) valor, corVermelho().getRGB());
+                img.setRGB(j, (int) valor, corVermelho().getRGB());
+                img.setRGB(j + 1, (int) valor, corVermelho().getRGB());
             }
         }
+
+        indice++;
 
         return img;
     }
