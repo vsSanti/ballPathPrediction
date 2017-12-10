@@ -25,10 +25,10 @@ public class MainJFrame extends javax.swing.JFrame {
             g.drawImage(videoLoader.grabFrame(), 0, 0, this);
         }
     }
-    
+
     public void tratarMats() {
         videoLoader.mostrarMats();
-//        TratarImagem tratamento = new TratarImagem(videoLoader.getMatsParaTratar());
+        new TratarImagem(videoLoader.getMatsParaTratar());
     }
 
     class MyThread extends Thread {
