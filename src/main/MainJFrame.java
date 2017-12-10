@@ -18,9 +18,15 @@ public class MainJFrame extends javax.swing.JFrame {
         teste = true;
         this.videoLoader = new VideoLoader();
 
-        new MyThread().start();
+        new threadVideo().start();
     }
 
+    public void tratarMats() {
+        //videoLoader.mostrarMats();
+        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
+    }
+
+    // chamado pelo repaint()
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
@@ -29,12 +35,7 @@ public class MainJFrame extends javax.swing.JFrame {
         }
     }
 
-    public void tratarMats() {
-        //videoLoader.mostrarMats();
-        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
-    }
-
-    class MyThread extends Thread {
+    class threadVideo extends Thread {
 
         @Override
         public void run() {
@@ -47,7 +48,7 @@ public class MainJFrame extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
             }
-            
+
             teste = false;
             tratarMats();
             interrupt();
@@ -67,7 +68,7 @@ public class MainJFrame extends javax.swing.JFrame {
         videoPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1000, 500));
+        setPreferredSize(new java.awt.Dimension(854, 480));
         setSize(new java.awt.Dimension(500, 500));
 
         videoPanel.setMaximumSize(new java.awt.Dimension(1250, 700));

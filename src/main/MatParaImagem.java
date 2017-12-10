@@ -1,15 +1,6 @@
 package main;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.util.Random;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import org.apache.commons.math3.analysis.interpolation.DividedDifferenceInterpolator;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonForm;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -23,14 +14,10 @@ public class MatParaImagem {
     private Mat mat = new Mat();
     private BufferedImage img;
     private byte[] dat;
-    
-    private BufferedImage imagemFinal;
-    
-    private double quantidadeTotalFrames;
-    private double frameAtual;
 
-    public MatParaImagem(double quantidadeTotalFrames) {
-        this.quantidadeTotalFrames = quantidadeTotalFrames;
+    private BufferedImage imagemFinal;
+
+    public MatParaImagem() {
     }
 
     public MatParaImagem(Mat mat) {
@@ -61,15 +48,15 @@ public class MatParaImagem {
         mat.get(0, 0, dat);
 
         img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), dat);
-        
-    imagemFinal = img;
+
+        imagemFinal = img;
         return img;
     }
-    
+
     public BufferedImage getImagemFinal() {
         return imagemFinal;
     }
-        
+
     public Mat getMat() {
         return mat;
     }

@@ -43,7 +43,7 @@ public class VideoLoader {
         totalDeFrames = video.get(Videoio.CAP_PROP_FRAME_COUNT);
         System.out.println("Total de frames: " + totalDeFrames);
 
-        this.matParaImagem = new MatParaImagem(totalDeFrames);
+        this.matParaImagem = new MatParaImagem();
     }
 
     private void loadVideo() {
