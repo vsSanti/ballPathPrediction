@@ -45,33 +45,67 @@ public class TratarImagem {
 
     public BufferedImage desenhaGrafico(BufferedImage img) {
 
-        double[] x = new double[coordX.size()];
-        double[] y = new double[coordY.size()];
+        for (int a = 2; a <= coordX.size(); a++) {
 
-        for (int i = 0; i < coordX.size(); i++) {
-            if (coordX.get(i) != 0) {
-                x[i] = coordX.get(i);
-                y[i] = coordY.get(i);
+            double[] x = new double[a];
+            double[] y = new double[a];
+
+            for (int i = 0; i < a; i++) {
+                if (coordX.get(i) != 0) {
+                    x[i] = coordX.get(i);
+                    y[i] = coordY.get(i);
+                }
             }
-        }
 
-        System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
 
-        PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
+            PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-        for (int i = 0; i < 850; i++) {
-            double valor = fNewton.value(i);
-            if (valor < img.getHeight() && valor > 0) {
-                img.setRGB(i, (int) valor, corVermelho().getRGB());
-                img.setRGB(i + 1, (int) valor, corVermelho().getRGB());
+            for (int i = 0; i < 850; i++) {
+                double valor = fNewton.value(i);
+                if (valor < img.getHeight() && valor > 0) {
+                    img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
+                    img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+                }
             }
-        }
 
+        }
         return img;
     }
 
     public Color corVermelho() {
         return new Color(255, 0, 0);
+    }
+    
+    public Color corAmarelo() {
+        return new Color(255, 255, 0);
+    }
+    
+    public Color corVerde() {
+        return new Color(0, 255, 0);
+    }
+    
+    public Color corRosa() {
+        return new Color(255, 0, 255);
+    }
+    
+    public Color selecionaCor(int n) {
+        Color color = corVermelho();
+        switch (n) {
+            case 2: 
+                color = corVermelho();
+                break;
+            case 3:
+                color = corAmarelo();
+                break;
+            case 4:
+                color = corVerde();
+                break;
+            case 5:
+                color = corRosa();
+                break;
+        }
+        return color;
     }
 
     public void iniciarTratamento() {
@@ -117,14 +151,13 @@ public class TratarImagem {
             Mat circles = new Mat();
             mostrarImagem(saturation);
             //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 58, 15, 100);
-            
+
             // FUNCIONANDO 4N 2N 1080p
             //Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 500, 20, 70, 30, 100);
             System.out.println(saturation.toString());
             // bom pro 1n
             Imgproc.HoughCircles(saturation, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 55, 30, 50);
 
-            
             int maiorCirculo = 0;
             double maiorCirculoX = 0;
             double maiorCirculoY = 0;
