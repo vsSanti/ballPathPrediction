@@ -10,10 +10,12 @@ public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
     public TratarImagem tratarImagem;
+    public boolean teste;
 
     public MainJFrame() {
         initComponents();
 
+        teste = true;
         this.videoLoader = new VideoLoader();
 
         new MyThread().start();
@@ -22,7 +24,7 @@ public class MainJFrame extends javax.swing.JFrame {
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2) {
+        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && teste) {
             g.drawImage(videoLoader.grabFrame(), 0, 0, this);
         }
     }
@@ -46,7 +48,9 @@ public class MainJFrame extends javax.swing.JFrame {
                 }
             }
             
+            teste = false;
             tratarMats();
+            interrupt();
 
         }
     }
