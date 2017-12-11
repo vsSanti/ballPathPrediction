@@ -65,34 +65,34 @@ public class VideoLoader {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
         System.out.println("\nFrame atual: " + frameAtual);
 
-        Mat teste = new Mat();
-        video.read(teste);
+        Mat frame = new Mat();
+        video.read(frame);
 
         if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
 
             if (coordenadas.size() >= 1) {
-                Point aux = tratamentoImagem.tratarFrameAtual(teste.clone());
+                Point aux = tratamentoImagem.tratarFrameAtual(frame.clone());
 
                 if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
                     coordenadas.add(aux);
                 }
             } else {
-                coordenadas.add(tratamentoImagem.tratarFrameAtual(teste.clone()));
+                coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
             }
 
-            if (coordenadas.size() >= 4) {
-                BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(teste), coordenadas);
+            if (coordenadas.size() >= (int) (0.25 * totalDeFrames)) {
+                BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
                 fazerAlteracaoDesenho = false;
 
                 return img;
             }
         } else if (!fazerAlteracaoDesenho) {
 
-            BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(teste), coordenadas);
+            BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
             return img;
         }
 
-        return ShowWindow.matToBufferedImage(teste);
+        return ShowWindow.matToBufferedImage(frame);
     }
 
     public double getFrameAtual() {
