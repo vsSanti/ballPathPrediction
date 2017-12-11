@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
@@ -27,28 +28,34 @@ public class VideoLoader {
     private double frameAtual;
 
     private ArrayList<Mat> matsParaTratar;
-    public MatParaBuffImg matParaImagem;
+
+    private TratarImagem tratamentoImagem;
+    private ArrayList<Point> coordenadas;
+
+    private boolean fazerAlteracaoDesenho;
 
     public VideoLoader() {
-        this.matsParaTratar = new ArrayList<>();
         this.video = new VideoCapture();
         this.fileDir = System.getProperty("user.dir") + File.separator + "videos" + File.separator;
         this.extension = ".mp4";
+
+        this.tratamentoImagem = new TratarImagem();
+        this.matsParaTratar = new ArrayList<>();
+        this.coordenadas = new ArrayList<>();
+        this.fazerAlteracaoDesenho = true;
 
         loadVideo();
 
         totalDeFrames = video.get(Videoio.CAP_PROP_FRAME_COUNT);
         System.out.println("Total de frames: " + totalDeFrames);
-
-        this.matParaImagem = new MatParaBuffImg();
     }
 
     private void loadVideo() {
-        String videoEscolhido = "4N" + extension;
+        String videoEscolhido = "1N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
-            System.out.println("Video carrecado com sucesso.");
+            System.out.println("Video carregado com sucesso.");
         } else {
             System.out.println("Video falhou.");
         }
@@ -56,20 +63,36 @@ public class VideoLoader {
 
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
-        System.out.println("Frame atual: " + frameAtual);
+        System.out.println("\nFrame atual: " + frameAtual);
 
-        if (frameAtual > 0 && (frameAtual % 2) == 0) {
-            matsParaTratar.add(matParaImagem.getMat().clone());
+        Mat frame = new Mat();
+        video.read(frame);
 
-            System.out.println("Frames escolhidos: " + matsParaTratar.size());
+        if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
+
+            if (coordenadas.size() >= 1) {
+                Point aux = tratamentoImagem.tratarFrameAtual(frame.clone());
+
+                if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
+                    coordenadas.add(aux);
+                }
+            } else {
+                coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
+            }
+
+            if (coordenadas.size() >= (int) (0.25 * totalDeFrames)) {
+                BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
+                fazerAlteracaoDesenho = false;
+
+                return img;
+            }
+        } else if (!fazerAlteracaoDesenho) {
+
+            BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
+            return img;
         }
 
-        video.read(matParaImagem.getMat());
-        return matParaImagem.getImage(matParaImagem.getMat());
-    }
-
-    public BufferedImage getImagemFinal() {
-        return matParaImagem.getImagemFinal();
+        return ShowWindow.matToBufferedImage(frame);
     }
 
     public double getFrameAtual() {

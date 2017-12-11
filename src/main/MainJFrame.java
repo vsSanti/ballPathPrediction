@@ -21,39 +21,32 @@ public class MainJFrame extends javax.swing.JFrame {
         new threadVideo().start();
     }
 
-    public void tratarMats() {
-        //videoLoader.mostrarMats();
-        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
-    }
-
     // chamado pelo repaint()
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && possivelContinuar) {
-            g.drawImage(videoLoader.grabFrame(), 0, 0, this);
-        }
+
+        g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        
     }
 
     class threadVideo extends Thread {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < (videoLoader.getTotalFrames() - 1) / 2; frameAtual++) {
-
+            //int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() + 10; frameAtual++
+            for (;;) {
                 repaint();
                 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(400);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            possivelContinuar = false;
-            tratarMats();
-            interrupt();
-
+            //ystem.out.println("finalizou run");
+            //interrupt();
         }
     }
 
