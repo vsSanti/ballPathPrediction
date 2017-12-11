@@ -2,10 +2,11 @@ package main;
 
 import java.awt.Graphics;
 
-/**
- *
- * @author Gabriel
- */
+// ----------------------------------------
+// Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
+// Matrículas 78218, 78208, e 71293
+// ----------------------------------------
+
 public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
@@ -25,9 +26,7 @@ public class MainJFrame extends javax.swing.JFrame {
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-
         g.drawImage(videoLoader.grabFrame(), 0, 0, this);
-        
     }
 
     class threadVideo extends Thread {
@@ -39,13 +38,13 @@ public class MainJFrame extends javax.swing.JFrame {
                 repaint();
                 
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            //ystem.out.println("finalizou run");
+            //System.out.println("finalizou run");
             //interrupt();
         }
     }
