@@ -10,48 +10,43 @@ public class MainJFrame extends javax.swing.JFrame {
 
     public VideoLoader videoLoader;
     public TratarImagem tratarImagem;
-    public boolean teste;
+    public boolean possivelContinuar;
 
     public MainJFrame() {
         initComponents();
 
-        teste = true;
+        possivelContinuar = true;
         this.videoLoader = new VideoLoader();
 
-        new MyThread().start();
+        new threadVideo().start();
     }
 
+    // chamado pelo repaint()
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        if (videoLoader.getFrameAtual() < videoLoader.getTotalFrames() / 2 && teste) {
-            g.drawImage(videoLoader.grabFrame(), 0, 0, this);
-        }
+
+        g.drawImage(videoLoader.grabFrame(), 0, 0, this);
+        
     }
 
-    public void tratarMats() {
-        //videoLoader.mostrarMats();
-        tratarImagem = new TratarImagem(videoLoader.getMatsParaTratar(), videoLoader.getImagemFinal());
-    }
-
-    class MyThread extends Thread {
+    class threadVideo extends Thread {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < (videoLoader.getTotalFrames() - 1) / 2; frameAtual++) {
-
+            //int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() + 10; frameAtual++
+            for (;;) {
                 repaint();
+                
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(400);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            
-            teste = false;
-            tratarMats();
-            interrupt();
 
+            //ystem.out.println("finalizou run");
+            //interrupt();
         }
     }
 
@@ -67,7 +62,7 @@ public class MainJFrame extends javax.swing.JFrame {
         videoPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1000, 500));
+        setPreferredSize(new java.awt.Dimension(854, 480));
         setSize(new java.awt.Dimension(500, 500));
 
         videoPanel.setMaximumSize(new java.awt.Dimension(1250, 700));

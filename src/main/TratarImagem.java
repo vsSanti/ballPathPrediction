@@ -14,6 +14,9 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonFor
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 /**
@@ -22,182 +25,119 @@ import org.opencv.imgproc.Imgproc;
  */
 public class TratarImagem {
 
-    private ArrayList<Mat> listaMats;
-    private ArrayList<Double> coordX, coordY;
-
-    private BufferedImage imagemFinal;
-
-    //private JFrame frame = new JFrame();
-    //private JLabel label = new JLabel();
-    public TratarImagem(ArrayList<Mat> listaMats, BufferedImage imagemFinal) {
-        System.out.println("tratamneto de imagem");
-
-        this.listaMats = listaMats;
-        this.imagemFinal = imagemFinal;
-
-        coordX = new ArrayList<>();
-        coordY = new ArrayList<>();
-
-        iniciarTratamento();
-        imagemFinal = desenhaGrafico(imagemFinal);
-        mostrarImagem(imagemFinal);
+    public TratarImagem() {
     }
 
-    public BufferedImage desenhaGrafico(BufferedImage img) {
+    public Point tratarFrameAtual(Mat imagem) {
+        Point coord = new Point();
+        Mat aux = new Mat();
 
-        for (int a = 2; a <= coordX.size(); a++) {
+        aux = getSaturation(imagem);
+
+        //mostrarMat(imagem);
+        coord = getBallCoordinates(aux);
+
+        return coord;
+    }
+
+    public Point getBallCoordinates(Mat image) {
+        Point coord = new Point();
+        Mat circles = new Mat();
+
+        //ShowWindow.showWindow("teste", image);
+        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 20, 40);
+
+        System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
+
+        double[] aux = circles.get(0, 0);
+
+        for (int i = 0; i < aux.length; i++) {
+            System.out.println("aux " + i + ": " + aux[i]);
+        }
+
+        if (aux[0] != 0) {
+            coord.x = (int) aux[0];
+        }
+        if (aux[1] != 0) {
+            coord.y = (int) aux[1];
+        }
+
+        System.out.println("Circulo escolhido X: " + aux[0] + " | Y: " + aux[1]);
+        return coord;
+    }
+
+    public Mat getSaturation(Mat image) {
+        Imgproc.medianBlur(image, image, 17);
+        Mat hsv = new Mat();
+
+        Imgproc.cvtColor(image, hsv, Imgproc.COLOR_BGR2HSV);
+
+        Mat mask = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
+
+        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), mask);
+
+        //mostrarMat(mask);
+        return mask;
+    }
+
+    public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
+
+        for (int a = 2; a <= coord.size(); a++) {
 
             double[] x = new double[a];
             double[] y = new double[a];
 
             for (int i = 0; i < a; i++) {
-                if (coordX.get(i) != 0) {
-                    x[i] = coordX.get(i);
-                    y[i] = coordY.get(i);
-                }
-            }
-
-            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
-
-            PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
-
-            for (int i = 0; i < 850; i++) {
-                double valor = fNewton.value(i);
-                if (valor < img.getHeight() && valor > 0) {
-                    img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
-                    img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
-                }
-            }
-
-        }
-        return img;
-    }
-
-    public Color corVermelho() {
-        return new Color(255, 0, 0);
-    }
-    
-    public Color corAmarelo() {
-        return new Color(255, 255, 0);
-    }
-    
-    public Color corVerde() {
-        return new Color(0, 255, 0);
-    }
-    
-    public Color corRosa() {
-        return new Color(255, 0, 255);
-    }
-    
-    public Color selecionaCor(int n) {
-        Color color = corVermelho();
-        switch (n) {
-            case 2: 
-                color = corVermelho();
-                break;
-            case 3:
-                color = corAmarelo();
-                break;
-            case 4:
-                color = corVerde();
-                break;
-            case 5:
-                color = corRosa();
-                break;
-        }
-        return color;
-    }
-
-    public void iniciarTratamento() {
-
-        System.out.println("listaMats: " + listaMats.size());
-
-        for (int matAtual = 0; matAtual < listaMats.size(); matAtual++) {
-            System.out.println("matAtual: " + matAtual);
-            Mat image = listaMats.get(matAtual);
-
-            Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-
-            Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-
-            for (int i = 0; i < image.rows(); i++) {
-                for (int j = 0; j < image.cols(); j++) {
-                    double temp[] = image.get(i, j);
-                    saturation.put(i, j, temp[1]);
-                }
-            }
-            
-            Mat binarized = new Mat();
-            Imgproc.threshold(saturation, binarized, 135, 255, Imgproc.THRESH_BINARY);
-
-            
-            Mat circles = new Mat();
-            mostrarImagem(binarized);
-            
-            System.out.println(saturation.toString());
-            Imgproc.HoughCircles(binarized, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
-
-            int maiorCirculo = 0;
-            double maiorCirculoX = 0;
-            double maiorCirculoY = 0;
-            for (int j = 0; j < circles.rows(); j++) {
-                for (int k = 0; k < circles.cols(); k++) {
-                    double[] aux = circles.get(j, k);
-
-                    if (aux[2] > maiorCirculo) {
-                        maiorCirculoX = aux[0];
-                        maiorCirculoY = aux[1];
+                if (coord.get(i).x != 0) {
+                    if (i == 0) {
+                        x[i] = coord.get(i).x;
+                        y[i] = coord.get(i).y;
+                    } else if (i > 0) {
+                        if (y[i] < y[i - 1]) {
+                            x[i] = coord.get(i).x;
+                            y[i] = coord.get(i).y;
+                        }
                     }
                 }
             }
+   
+            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+           
+            try {
+                PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
-            if (maiorCirculoX != 0) {
-                coordX.add(maiorCirculoX);
+                for (int i = 0; i < 850; i++) {
+                    double valor = fNewton.value(i);
+                    if (valor < img.getHeight() && valor > 0) {
+                        img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
+                        img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (maiorCirculoY != 0) {
-                coordY.add(maiorCirculoY);
-            }
-            System.out.println("Maior circulo X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
+
         }
 
+        return img;
     }
 
-    public ArrayList<Double> getCoordX() {
-        return coordX;
+    public void mostrarBufferedImage(BufferedImage bi) {
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel();
+
+        ImageIcon icon = new ImageIcon(bi);
+        criarFrames(frame, label, icon);
     }
 
-    public ArrayList<Double> getCoordY() {
-        return coordY;
-    }
-
-    public void mostrarImagem(Mat mat) {
+    public void mostrarMat(Mat mat) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
 
         BufferedImage convertedMat = converterMat(mat);
 
         ImageIcon icon = new ImageIcon(convertedMat);
-
-        frame.setLayout(new FlowLayout());
-        frame.setSize(convertedMat.getWidth(), convertedMat.getHeight());
-        label.setIcon(icon);
-        frame.add(label);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public void mostrarImagem(BufferedImage img) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        ImageIcon icon = new ImageIcon(img);
-
-        frame.setLayout(new FlowLayout());
-        frame.setSize(img.getWidth(), img.getHeight());
-        label.setIcon(icon);
-        frame.add(label);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        criarFrames(frame, label, icon);
     }
 
     public BufferedImage converterMat(Mat mat) {
@@ -211,6 +151,50 @@ public class TratarImagem {
         mat.get(0, 0, ((DataBufferByte) image.getRaster().getDataBuffer()).getData());
 
         return image;
+    }
+
+    public void criarFrames(JFrame frame, JLabel label, ImageIcon icon) {
+        frame.setLayout(new FlowLayout());
+        frame.setSize(icon.getIconWidth(), icon.getIconHeight());
+        label.setIcon(icon);
+        frame.add(label);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public Color corVermelho() {
+        return new Color(255, 0, 0);
+    }
+
+    public Color corAmarelo() {
+        return new Color(255, 255, 0);
+    }
+
+    public Color corVerde() {
+        return new Color(0, 255, 0);
+    }
+
+    public Color corRosa() {
+        return new Color(255, 0, 255);
+    }
+
+    public Color selecionaCor(int n) {
+        Color color = corVermelho();
+        switch (n) {
+            case 2:
+                color = corVermelho();
+                break;
+            case 3:
+                color = corAmarelo();
+                break;
+            case 4:
+                color = corVerde();
+                break;
+            case 5:
+                color = corRosa();
+                break;
+        }
+        return color;
     }
 
     static {
