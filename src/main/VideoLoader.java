@@ -1,13 +1,8 @@
 package main;
 
-import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -75,15 +70,16 @@ public class VideoLoader {
 
                 if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
                     coordenadas.add(aux);
+
                 }
             } else {
                 coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
             }
 
-            if (coordenadas.size() >= (int) (0.25 * totalDeFrames)) {
+            if (coordenadas.size() >= (int) (0.26 * totalDeFrames)) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
                 fazerAlteracaoDesenho = false;
-
+                
                 return img;
             }
         } else if (!fazerAlteracaoDesenho) {

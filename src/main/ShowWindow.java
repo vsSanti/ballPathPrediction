@@ -8,17 +8,8 @@ package main;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.util.LinkedList;
-import java.util.List;
 import javax.swing.*;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 /**
  *
@@ -46,7 +37,7 @@ public class ShowWindow extends JFrame{
     public static void showWindow(String nomeJanela, Mat picture){
         frame = new JFrame(nomeJanela);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,400);//largura e altura
+        frame.setSize(picture.cols(), picture.rows());//largura e altura
         image = matToBufferedImage(picture);
         JPanel panel = new JPanel(){
         @Override

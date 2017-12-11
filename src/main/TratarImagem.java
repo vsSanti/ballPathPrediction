@@ -14,7 +14,6 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonFor
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -25,18 +24,19 @@ import org.opencv.imgproc.Imgproc;
  */
 public class TratarImagem {
 
-    public TratarImagem() {
-    }
-
     public Point tratarFrameAtual(Mat imagem) {
         Point coord = new Point();
         Mat aux = new Mat();
+        Mat hsv = new Mat();
+        
+        Imgproc.medianBlur(imagem, imagem, 17);
+        Imgproc.cvtColor(imagem, hsv, Imgproc.COLOR_BGR2HSV);
+        
+        aux = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
+        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), aux);
 
-        aux = getSaturation(imagem);
-
-        //mostrarMat(imagem);
+        //ShowWindow.showWindow("teste", aux);
         coord = getBallCoordinates(aux);
-
         return coord;
     }
 
@@ -66,20 +66,6 @@ public class TratarImagem {
         return coord;
     }
 
-    public Mat getSaturation(Mat image) {
-        Imgproc.medianBlur(image, image, 17);
-        Mat hsv = new Mat();
-
-        Imgproc.cvtColor(image, hsv, Imgproc.COLOR_BGR2HSV);
-
-        Mat mask = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
-
-        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), mask);
-
-        //mostrarMat(mask);
-        return mask;
-    }
-
     public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
 
         for (int a = 2; a <= coord.size(); a++) {
@@ -100,9 +86,9 @@ public class TratarImagem {
                     }
                 }
             }
-   
+
             System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
-           
+
             try {
                 PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
