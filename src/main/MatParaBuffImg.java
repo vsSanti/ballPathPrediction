@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -11,7 +12,7 @@ import org.opencv.imgproc.Imgproc;
  */
 public class MatParaBuffImg {
 
-    private Mat mat = new Mat();
+    private Mat matClasse = new Mat();
     private BufferedImage img;
     private byte[] dat;
 
@@ -25,8 +26,10 @@ public class MatParaBuffImg {
     }
 
     private void getSpace(Mat mat) {
-        this.mat = mat;
+        this.matClasse = mat;
         int w = mat.cols(), h = mat.rows();
+
+        System.out.println("mat.cols: " + mat.cols() + " | mat.rows(): " + mat.rows());
 
         if (dat == null || dat.length != w * h * 3) {
             dat = new byte[w * h * 3];
@@ -37,12 +40,14 @@ public class MatParaBuffImg {
                 img = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
             }
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
 
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2BGR); // normaliza as cores
     }
 
     public BufferedImage getImage(Mat mat) {
+        System.out.println("mat.cols GTIMAGE: " + mat.cols() + " | mat.rows(): " + mat.rows());
         getSpace(mat);
         mat.get(0, 0, dat);
 
@@ -50,6 +55,7 @@ public class MatParaBuffImg {
 
         imagemFinal = img;
         return img;
+
     }
 
     public BufferedImage getImagemFinal() {
@@ -57,7 +63,7 @@ public class MatParaBuffImg {
     }
 
     public Mat getMat() {
-        return mat;
+        return matClasse;
     }
 
     public double getHeight() {

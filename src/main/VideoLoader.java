@@ -54,7 +54,7 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String videoEscolhido = "4N" + extension;
+        String videoEscolhido = "2N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
@@ -66,25 +66,29 @@ public class VideoLoader {
 
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
-        System.out.println("Frame atual: " + frameAtual);
+        System.out.println("\nFrame atual: " + frameAtual);
 
         if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
 
             if (!coordenadas.contains(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()))) {
                 coordenadas.add(tratamentoImagem.tratarFrameAtual(matParaImagem.getMat().clone()));
             }
+            System.out.println("first step " + video.get(Videoio.CAP_PROP_POS_FRAMES));
 
             if (coordenadas.size() >= 3) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(matParaImagem.getImage(matParaImagem.getMat()), coordenadas);
-
+                System.out.println("second step" + video.get(Videoio.CAP_PROP_POS_FRAMES));
                 fazerAlteracaoDesenho = false;
 
                 video.read(matParaImagem.getMat());
                 return img;
             }
-        } else if (frameAtual > 0 && !fazerAlteracaoDesenho) {
+        } else if (!fazerAlteracaoDesenho) {
+            System.out.println("third step" + video.get(Videoio.CAP_PROP_POS_FRAMES));
+
             video.read(matParaImagem.getMat());
-            return tratamentoImagem.desenhaGrafico(matParaImagem.getImage(matParaImagem.getMat()), coordenadas);
+            BufferedImage img = matParaImagem.getImage(matParaImagem.getMat());
+            return img;
         }
 
         video.read(matParaImagem.getMat());

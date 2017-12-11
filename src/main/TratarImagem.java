@@ -14,7 +14,9 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunctionNewtonFor
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 /**
@@ -30,7 +32,7 @@ public class TratarImagem {
         Point coord = new Point();
 
         imagem = getSaturation(imagem);
-        imagem = getBinary(imagem);
+        //imagem = getBinary(imagem);
 
         //mostrarMat(imagem);
         coord = getBallCoordinates(imagem);
@@ -42,45 +44,41 @@ public class TratarImagem {
         Point coord = new Point();
         Mat circles = new Mat();
 
+        //mostrarMat(image);
         Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
 
-        int maiorCirculo = 0;
-        double maiorCirculoX = 0;
-        double maiorCirculoY = 0;
-        for (int j = 0; j < circles.rows(); j++) {
-            for (int k = 0; k < circles.cols(); k++) {
-                double[] aux = circles.get(j, k);
-
-                if (aux[2] > maiorCirculo) {
-                    maiorCirculoX = aux[0];
-                    maiorCirculoY = aux[1];
-                }
-            }
+        System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
+        
+        double[] aux = circles.get(0, 0);
+        
+        for (int i = 0; i < aux.length; i++) {
+            System.out.println("aux " + i + ": " + aux[i]);
+        }
+        
+        if (aux[0]!= 0) {
+            coord.x = (int) aux[0];
+        }
+        if (aux[1] != 0) {
+            coord.y = (int) aux[1];
         }
 
-        if (maiorCirculoX != 0) {
-            coord.x = maiorCirculoX;
-        }
-        if (maiorCirculoY != 0) {
-            coord.y = maiorCirculoY;
-        }
-
-        System.out.println("Circulo escolhido X: " + maiorCirculoX + " | Y: " + maiorCirculoY);
+        System.out.println("Circulo escolhido X: " + aux[0] + " | Y: " + aux[1]);
         return coord;
     }
 
     public Mat getSaturation(Mat image) {
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2HSV);
-        Mat saturation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+        Imgproc.medianBlur(image, image, 25);
+        Mat hsv = new Mat();
 
-        for (int i = 0; i < image.rows(); i++) {
-            for (int j = 0; j < image.cols(); j++) {
-                double temp[] = image.get(i, j);
-                saturation.put(i, j, temp[1]);
-            }
-        }
+        Imgproc.cvtColor(image, hsv, Imgproc.COLOR_BGR2HSV);
 
-        return saturation;
+        Mat saturation = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC1);
+        Mat mask = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
+
+        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), mask);
+
+        //mostrarMat(mask);
+        return mask;
     }
 
     public Mat getBinary(Mat image) {
@@ -105,7 +103,7 @@ public class TratarImagem {
                 }
             }
 
-            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+            //System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
 
             try {
                 PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
@@ -118,7 +116,7 @@ public class TratarImagem {
                     }
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
 
         }

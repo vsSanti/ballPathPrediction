@@ -20,12 +20,12 @@ public class MainJFrame extends javax.swing.JFrame {
 
         new threadVideo().start();
     }
-    
+
     // chamado pelo repaint()
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        
+
         g.drawImage(videoLoader.grabFrame(), 0, 0, this);
         
     }
@@ -34,9 +34,10 @@ public class MainJFrame extends javax.swing.JFrame {
 
         @Override
         public void run() {
-            for (int frameAtual = 0; frameAtual < videoLoader.getTotalFrames(); frameAtual++) {
+            //int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() + 10; frameAtual++
+            for (;;) {
                 repaint();
-               
+                
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -44,7 +45,8 @@ public class MainJFrame extends javax.swing.JFrame {
                 }
             }
 
-            interrupt();
+            //ystem.out.println("finalizou run");
+            //interrupt();
         }
     }
 
