@@ -51,7 +51,7 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String videoEscolhido = "1N" + extension;
+        String videoEscolhido = "4N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
@@ -74,7 +74,7 @@ public class VideoLoader {
                 coordenadas.add(tratamentoImagem.tratarFrameAtual(teste.clone()));
             }
 
-            if (coordenadas.size() >= 3) {
+            if (coordenadas.size() >= 5) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(teste), coordenadas);
                 fazerAlteracaoDesenho = false;
 

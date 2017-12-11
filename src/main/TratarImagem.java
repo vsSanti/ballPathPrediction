@@ -89,12 +89,19 @@ public class TratarImagem {
 
             for (int i = 0; i < a; i++) {
                 if (coord.get(i).x != 0) {
-                    x[i] = coord.get(i).x;
-                    y[i] = coord.get(i).y;
+                    if (i == 0) {
+                        x[i] = coord.get(i).x;
+                        y[i] = coord.get(i).y;
+                    } else if (i > 0) {
+                        if (y[i] < y[i - 1]) {
+                            x[i] = coord.get(i).x;
+                            y[i] = coord.get(i).y;
+                        }
+                    }
                 }
             }
 
-            //System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
             try {
                 PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
