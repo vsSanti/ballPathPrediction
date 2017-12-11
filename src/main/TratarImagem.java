@@ -45,7 +45,7 @@ public class TratarImagem {
         Mat circles = new Mat();
 
         //mostrarMat(image);
-        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 30, 40);
+        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 20, 40);
 
         System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
 

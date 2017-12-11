@@ -51,7 +51,7 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String videoEscolhido = "4N" + extension;
+        String videoEscolhido = "7N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
@@ -70,9 +70,7 @@ public class VideoLoader {
 
         if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
 
-            if (!coordenadas.contains(tratamentoImagem.tratarFrameAtual(teste))) {
-                coordenadas.add(tratamentoImagem.tratarFrameAtual(teste.clone()));
-            }
+            coordenadas.add(tratamentoImagem.tratarFrameAtual(teste.clone()));
 
             if (coordenadas.size() >= 5) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(teste), coordenadas);
@@ -81,7 +79,7 @@ public class VideoLoader {
                 return img;
             }
         } else if (!fazerAlteracaoDesenho) {
-            
+
             BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(teste), coordenadas);
             return img;
         }
