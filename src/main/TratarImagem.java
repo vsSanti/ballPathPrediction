@@ -30,12 +30,12 @@ public class TratarImagem {
 
     public Point tratarFrameAtual(Mat imagem) {
         Point coord = new Point();
+        Mat aux = new Mat();
 
-        imagem = getSaturation(imagem);
-        //imagem = getBinary(imagem);
+        aux = getSaturation(imagem);
 
         //mostrarMat(imagem);
-        coord = getBallCoordinates(imagem);
+        coord = getBallCoordinates(aux);
 
         return coord;
     }
@@ -45,17 +45,17 @@ public class TratarImagem {
         Mat circles = new Mat();
 
         //mostrarMat(image);
-        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 20, 30, 50);
+        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 30, 40);
 
         System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
-        
+
         double[] aux = circles.get(0, 0);
-        
+
         for (int i = 0; i < aux.length; i++) {
             System.out.println("aux " + i + ": " + aux[i]);
         }
-        
-        if (aux[0]!= 0) {
+
+        if (aux[0] != 0) {
             coord.x = (int) aux[0];
         }
         if (aux[1] != 0) {
@@ -67,26 +67,17 @@ public class TratarImagem {
     }
 
     public Mat getSaturation(Mat image) {
-        Imgproc.medianBlur(image, image, 25);
+        Imgproc.medianBlur(image, image, 17);
         Mat hsv = new Mat();
 
         Imgproc.cvtColor(image, hsv, Imgproc.COLOR_BGR2HSV);
 
-        Mat saturation = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC1);
         Mat mask = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
 
         Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), mask);
 
         //mostrarMat(mask);
         return mask;
-    }
-
-    public Mat getBinary(Mat image) {
-        Mat binarized = new Mat();
-
-        Imgproc.threshold(image, binarized, 135, 255, Imgproc.THRESH_BINARY);
-
-        return binarized;
     }
 
     public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
@@ -104,7 +95,6 @@ public class TratarImagem {
             }
 
             //System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
-
             try {
                 PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 
