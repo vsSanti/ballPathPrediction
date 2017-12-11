@@ -51,14 +51,8 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-<<<<<<< HEAD
-        String first_test = "8N" + extension;
-
-        String caminhoCompleto = fileDir + first_test;
-=======
         String videoEscolhido = "1N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
->>>>>>> master
 
         if (video.open(caminhoCompleto)) {
             System.out.println("Video carregado com sucesso.");

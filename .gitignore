@@ -21,3 +21,5 @@ nbproject/project.properties
 nbproject/project.properties
 nbproject/project.properties
 src/main/VideoLoader.java
+src/main/MainJFrame.java
+src/main/VideoLoader.java

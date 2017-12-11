@@ -39,7 +39,7 @@ public class MainJFrame extends javax.swing.JFrame {
                 repaint();
                 
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
