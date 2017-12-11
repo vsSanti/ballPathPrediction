@@ -44,7 +44,7 @@ public class TratarImagem {
         Point coord = new Point();
         Mat circles = new Mat();
 
-        //mostrarMat(image);
+        //ShowWindow.showWindow("teste", image);
         Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 20, 40);
 
         System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
@@ -100,8 +100,9 @@ public class TratarImagem {
                     }
                 }
             }
-
+   
             System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+           
             try {
                 PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
 

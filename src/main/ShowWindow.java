@@ -46,7 +46,7 @@ public class ShowWindow extends JFrame{
     public static void showWindow(String nomeJanela, Mat picture){
         frame = new JFrame(nomeJanela);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,800);//largura e altura
+        frame.setSize(800,400);//largura e altura
         image = matToBufferedImage(picture);
         JPanel panel = new JPanel(){
         @Override
@@ -67,7 +67,7 @@ public class ShowWindow extends JFrame{
     public static void showWindow(String nomeJanela, Mat picture, int l, int a){
         frame = new JFrame(nomeJanela);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,800);//largura e altura
+        frame.setSize(400, 800);//largura e altura
         image = matToBufferedImage(picture);
         if(l == 0){alt = image.getHeight(); larg = image.getWidth();}
         larg = l;
