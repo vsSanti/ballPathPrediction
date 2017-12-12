@@ -1,6 +1,9 @@
 package main;
 
 import java.awt.Graphics;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 // ----------------------------------------
 // Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
@@ -9,44 +12,29 @@ import java.awt.Graphics;
 
 public class MainJFrame extends javax.swing.JFrame {
 
-    public VideoLoader videoLoader;
-    public TratarImagem tratarImagem;
+    public VideoHandler videoHandler;
+    public ImageProcessor tratarImagem;
     public boolean possivelContinuar;
 
     public MainJFrame() {
         initComponents();
 
         possivelContinuar = true;
-        this.videoLoader = new VideoLoader();
+        this.videoHandler = new VideoHandler();
 
-        new threadVideo().start();
+        final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                repaint();
+            }
+        }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
-    // chamado pelo repaint()
     @Override
     public void paint(Graphics g) {
         g = videoPanel.getGraphics();
-        g.drawImage(videoLoader.grabFrame(), 0, 0, this);
-    }
-
-    class threadVideo extends Thread {
-
-        @Override
-        public void run() {
-            //int frameAtual = 0; frameAtual < videoLoader.getTotalFrames() + 10; frameAtual++
-            for (;;) {
-                repaint();
-                
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            //System.out.println("finalizou run");
-            //interrupt();
-        }
+        g.drawImage(videoHandler.grabFrame(), 0, 0, this);
     }
 
     /**

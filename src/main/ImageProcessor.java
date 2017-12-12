@@ -18,56 +18,45 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+<<<<<<< HEAD:src/main/TratarImagem.java
 // ----------------------------------------
 // Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
 // Matrículas 78218, 78208, e 71293
 // ----------------------------------------
 
 public class TratarImagem {
-
-    public Point tratarFrameAtual(Mat imagem) {
-        Point coord = new Point();
-        Mat aux = new Mat();
-        Mat hsv = new Mat();
-
-        Imgproc.medianBlur(imagem, imagem, 17);
-        Imgproc.cvtColor(imagem, hsv, Imgproc.COLOR_BGR2HSV);
-
-        aux = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
-        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), aux);
-
-        //ShowWindow.showWindow("teste", aux);
-        coord = getBallCoordinates(aux);
-        return coord;
-    }
+=======
+public class ImageProcessor {
+>>>>>>> gabiwel:src/main/ImageProcessor.java
 
     public Point getBallCoordinates(Mat image) {
         Point coord = new Point();
-        Mat circles = new Mat();
 
-        //ShowWindow.showWindow("teste", image);
-        Imgproc.HoughCircles(image, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 20, 40);
+        double[] foundCircle = processImage(image).get(0, 0);
 
-        System.out.println("circles row: " + circles.rows() + " | cols: " + circles.cols());
+        coord.x = (int) foundCircle[0];
+        coord.y = (int) foundCircle[1];
 
-        double[] aux = circles.get(0, 0);
-
-        for (int i = 0; i < aux.length; i++) {
-            System.out.println("aux " + i + ": " + aux[i]);
-        }
-
-        if (aux[0] != 0) {
-            coord.x = (int) aux[0];
-        }
-        if (aux[1] != 0) {
-            coord.y = (int) aux[1];
-        }
-
-        System.out.println("Circulo escolhido X: " + aux[0] + " | Y: " + aux[1]);
         return coord;
     }
 
-    public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
+    public Mat processImage(Mat image) {
+        Mat aux;
+        Mat hsv = new Mat();
+        Mat circles = new Mat();
+
+        Imgproc.medianBlur(image, image, 17);
+        Imgproc.cvtColor(image, hsv, Imgproc.COLOR_BGR2HSV);
+        
+        aux = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
+        Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), aux);
+
+        Imgproc.HoughCircles(aux, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 350, 20, 10, 20, 40);
+
+        return circles;
+    }
+
+    public BufferedImage drawPrediction(BufferedImage img, ArrayList<Point> coord) {
 
         double[] x = new double[3];
         double[] y = new double[3];
@@ -76,7 +65,7 @@ public class TratarImagem {
         y[0] = coord.get(0).y;
 
         int valorMeio = coord.size() / 2;
-        System.out.println("valorMeio = " + valorMeio);
+        //System.out.println("valorMeio = " + valorMeio);
         x[1] = coord.get(valorMeio).x;
         y[1] = coord.get(valorMeio).y;
 
@@ -106,32 +95,32 @@ public class TratarImagem {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return img;
     }
 
-    public void mostrarBufferedImage(BufferedImage bi) {
+    public void displayBufferedImage(BufferedImage bi) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
 
         ImageIcon icon = new ImageIcon(bi);
-        criarFrames(frame, label, icon);
+        iniNewJFrame(frame, label, icon);
     }
 
-    public void mostrarMat(Mat mat) {
+    public void displayMat(Mat mat) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
 
-        BufferedImage convertedMat = converterMat(mat);
+        BufferedImage convertedMat = convertMat2BuffImg(mat);
 
         ImageIcon icon = new ImageIcon(convertedMat);
-        criarFrames(frame, label, icon);
+        iniNewJFrame(frame, label, icon);
     }
 
-    public BufferedImage converterMat(Mat mat) {
+    public BufferedImage convertMat2BuffImg(Mat mat) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
-        System.out.println("channels:" + mat.channels());
+        
         if (mat.channels() == 3) {
             type = BufferedImage.TYPE_3BYTE_BGR;
         }
@@ -142,7 +131,7 @@ public class TratarImagem {
         return image;
     }
 
-    public void criarFrames(JFrame frame, JLabel label, ImageIcon icon) {
+    public void iniNewJFrame(JFrame frame, JLabel label, ImageIcon icon) {
         frame.setLayout(new FlowLayout());
         frame.setSize(icon.getIconWidth(), icon.getIconHeight());
         label.setIcon(icon);
