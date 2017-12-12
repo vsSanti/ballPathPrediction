@@ -5,3 +5,16 @@ Detection was achieved by using a combination of median blur, color convertions,
 
 Made by [Gabriel Ferreira](https://github.com/gabrielbunselmeyer), [Vinícius Santiago](https://github.com/vsSanti), and [Mateus Souza](https://github.com/Rikemat) as part of the Object Oriented Programming II class of 2017/2 for the Universidade de Santa Cruz do Sul, Brazil.
 
+
+## Libraries used
+- [OpenCV 3.3.0](https://github.com/opencv/opencv/releases/tag/3.3.0).
+- [Apache Commons Math](http://commons.apache.org/proper/commons-math/).
+
+## Output examples
+
+<details> 
+  <summary>Show gifs</summary>
+  <IMG SRC="https://i.imgur.com/HELjZ4O.gif">
+  <IMG SRC="https://i.imgur.com/9DkEZNJ.gif">
+  <IMG SRC="https://i.imgur.com/mEiXQRk.gif">
+</details>
