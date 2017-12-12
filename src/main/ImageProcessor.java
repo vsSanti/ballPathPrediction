@@ -18,16 +18,12 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-<<<<<<< HEAD:src/main/TratarImagem.java
 // ----------------------------------------
 // Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
 // Matrículas 78218, 78208, e 71293
 // ----------------------------------------
 
-public class TratarImagem {
-=======
 public class ImageProcessor {
->>>>>>> gabiwel:src/main/ImageProcessor.java
 
     public Point getBallCoordinates(Mat image) {
         Point coord = new Point();
