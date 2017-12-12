@@ -18,10 +18,11 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-/**
- *
- * @author Gabriel
- */
+// ----------------------------------------
+// Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
+// Matrículas 78218, 78208, e 71293
+// ----------------------------------------
+
 public class TratarImagem {
 
     public Point tratarFrameAtual(Mat imagem) {

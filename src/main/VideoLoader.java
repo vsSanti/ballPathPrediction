@@ -9,10 +9,11 @@ import org.opencv.core.Point;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
-/**
- *
- * @author Gabriel
- */
+// ----------------------------------------
+// Trabalho por Gabriel Corrêa Ferreira, Vinícius da Silva Santiago, e Mateus Souza
+// Matrículas 78218, 78208, e 71293
+// ----------------------------------------
+
 public class VideoLoader {
 
     private final VideoCapture video;
@@ -62,14 +63,14 @@ public class VideoLoader {
         Mat frame = new Mat();
         video.read(frame);
         coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
-        
+
 //        if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
         if (frameAtual > 0 && fazerAlteracaoDesenho) {
             System.out.println("\nFrame atual: " + frameAtual);
             if (coordenadas.size() > 2) {
                 Point aux = tratamentoImagem.tratarFrameAtual(frame.clone());
                 coordenadas.add(aux);
-                
+
 //                if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
 //                    coordenadas.add(aux);
 //
@@ -81,7 +82,7 @@ public class VideoLoader {
             if (coordenadas.size() >= (int) (0.26 * totalDeFrames)) {
                 BufferedImage img = tratamentoImagem.desenhaGrafico(ShowWindow.matToBufferedImage(frame), coordenadas);
                 fazerAlteracaoDesenho = false;
-                
+
                 return img;
             }
         } else if (!fazerAlteracaoDesenho) {
