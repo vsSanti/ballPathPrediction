@@ -52,9 +52,11 @@ public class VideoHandler {
 
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
+        System.out.println("Frame atual: " + frameAtual);
+        
         Mat frame = new Mat();
         video.read(frame);
-        
+
         coordenadas.add(tratamentoImagem.getBallCoordinates(frame.clone()));
         BufferedImage img = tratamentoImagem.drawPrediction(tratamentoImagem.convertMat2BuffImg(frame), coordenadas);
 
