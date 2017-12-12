@@ -91,14 +91,6 @@ public class ImageProcessor {
         return img;
     }
 
-    public void displayBufferedImage(BufferedImage bi) {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel();
-
-        ImageIcon icon = new ImageIcon(bi);
-        iniNewJFrame(frame, label, icon);
-    }
-
     public void displayMat(Mat mat) {
         JFrame frame = new JFrame();
         JLabel label = new JLabel();
