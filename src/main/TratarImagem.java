@@ -28,10 +28,10 @@ public class TratarImagem {
         Point coord = new Point();
         Mat aux = new Mat();
         Mat hsv = new Mat();
-        
+
         Imgproc.medianBlur(imagem, imagem, 17);
         Imgproc.cvtColor(imagem, hsv, Imgproc.COLOR_BGR2HSV);
-        
+
         aux = new Mat(hsv.rows(), hsv.cols(), CvType.CV_8UC3);
         Core.inRange(hsv, new Scalar(0, 150, 0), new Scalar(115, 255, 115), aux);
 
@@ -68,43 +68,45 @@ public class TratarImagem {
 
     public BufferedImage desenhaGrafico(BufferedImage img, ArrayList<Point> coord) {
 
-        for (int a = 2; a <= coord.size(); a++) {
+        double[] x = new double[3];
+        double[] y = new double[3];
 
-            double[] x = new double[a];
-            double[] y = new double[a];
+        x[0] = coord.get(0).x;
+        y[0] = coord.get(0).y;
 
-            for (int i = 0; i < a; i++) {
-                if (coord.get(i).x != 0) {
-                    if (i == 0) {
-                        x[i] = coord.get(i).x;
-                        y[i] = coord.get(i).y;
-                    } else if (i > 0) {
-                        if (y[i] < y[i - 1]) {
-                            x[i] = coord.get(i).x;
-                            y[i] = coord.get(i).y;
-                        }
-                    }
+        int valorMeio = coord.size() / 2;
+        System.out.println("valorMeio = " + valorMeio);
+        x[1] = coord.get(valorMeio).x;
+        y[1] = coord.get(valorMeio).y;
+
+        x[2] = coord.get(coord.size() - 1).x;
+        y[2] = coord.get(coord.size() - 1).y;
+
+        System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
+
+        try {
+            PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
+
+            for (int i = 2; i < 848; i++) {
+                double valor = fNewton.value(i);
+                if (valor < img.getHeight() && valor > 0) {
+                    img.setRGB(i, (int) valor, corVerde().getRGB());
+                    img.setRGB(i + 1, (int) valor, corVerde().getRGB());
+                    img.setRGB(i, (int) valor + 1, corVerde().getRGB());
                 }
             }
 
-            System.out.println("\n x: " + Arrays.toString(x) + " | y: " + Arrays.toString(y));
-
-            try {
-                PolynomialFunctionNewtonForm fNewton = new DividedDifferenceInterpolator().interpolate(x, y);
-
-                for (int i = 0; i < 850; i++) {
-                    double valor = fNewton.value(i);
-                    if (valor < img.getHeight() && valor > 0) {
-                        img.setRGB(i, (int) valor, selecionaCor(a).getRGB());
-                        img.setRGB(i + 1, (int) valor, selecionaCor(a).getRGB());
+            for (int i = 0; i < coord.size(); i++) {
+                int var = -4;
+                for (int j = var; j < Math.abs(var); j++) {
+                    for (int k = var; k < Math.abs(var); k++) {
+                        img.setRGB((int) coord.get(i).x + k, (int) coord.get(i).y + j, corVermelho().getRGB());
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
         return img;
     }
 

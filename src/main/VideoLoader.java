@@ -46,7 +46,7 @@ public class VideoLoader {
     }
 
     private void loadVideo() {
-        String videoEscolhido = "1N" + extension;
+        String videoEscolhido = "5N" + extension;
         String caminhoCompleto = fileDir + videoEscolhido;
 
         if (video.open(caminhoCompleto)) {
@@ -58,22 +58,24 @@ public class VideoLoader {
 
     public BufferedImage grabFrame() {
         frameAtual = video.get(Videoio.CAP_PROP_POS_FRAMES);
-        System.out.println("\nFrame atual: " + frameAtual);
 
         Mat frame = new Mat();
         video.read(frame);
-
-        if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
-
-            if (coordenadas.size() >= 1) {
+        coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
+        
+//        if (frameAtual > 0 && (frameAtual % 2) == 0 && fazerAlteracaoDesenho) {
+        if (frameAtual > 0 && fazerAlteracaoDesenho) {
+            System.out.println("\nFrame atual: " + frameAtual);
+            if (coordenadas.size() > 2) {
                 Point aux = tratamentoImagem.tratarFrameAtual(frame.clone());
-
-                if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
-                    coordenadas.add(aux);
-
-                }
+                coordenadas.add(aux);
+                
+//                if (coordenadas.get(coordenadas.size() - 1).y > aux.y) {
+//                    coordenadas.add(aux);
+//
+//                }
             } else {
-                coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
+//                coordenadas.add(tratamentoImagem.tratarFrameAtual(frame.clone()));
             }
 
             if (coordenadas.size() >= (int) (0.26 * totalDeFrames)) {
